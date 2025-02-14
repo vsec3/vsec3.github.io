@@ -47,6 +47,7 @@
       position: relative;
       z-index: 1;
       transition: filter 0.3s ease;
+      display: none; /* Initially hidden */
     }
     .overlay {
       position: absolute;
@@ -95,7 +96,9 @@
       const audio = document.getElementById("audio");
       audio.play().catch(error => console.error("Playback error:", error));
       this.classList.add("hidden");
-      document.getElementById("content").style.filter = "blur(0)";
+      document.getElementById("content").style.display = "block"; // Show content
+      document.getElementById("content").style.filter = "blur(0)"; // Remove blur
+      typewriterEffect(); // Start the typewriter effect
     });
 
     particlesJS("particles-js", {
@@ -150,8 +153,6 @@
 
       setTimeout(typewriterEffect, deleting ? eraseSpeed : typeSpeed);
     }
-
-    typewriterEffect();
 
     // Three.js cube rendering
     const scene = new THREE.Scene();
