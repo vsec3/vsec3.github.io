@@ -3,10 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Site</title>
+  <title>VoltSec</title>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #2c2c2c;
+      color: white;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+    }
+    p {
+      font-size: 1.2rem;
+      margin-top: 10px;
+      opacity: 0.8;
+    }
+  </style>
 </head>
 <body>
-  <h1>Please load</h1>
+  <div id="particles-js"></div>
+
+  <h1>Welcome to VoltSec.xyz!</h1>
+  <p>Idk lmao</p>
 
   <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
 
@@ -15,6 +56,17 @@
       const audio = document.getElementById("audio");
       audio.play().catch(error => console.error("Playback error:", error));
     }, { once: true });
+
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 100 },
+        shape: { type: "circle" },
+        opacity: { value: 0.7, random: true },
+        size: { value: 3, random: true },
+        move: { speed: 1, direction: "bottom", out_mode: "out" },
+        line_linked: { enable: false }
+      }
+    });
   </script>
 </body>
 </html>
