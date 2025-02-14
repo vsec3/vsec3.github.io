@@ -17,12 +17,10 @@
       color: #00ff00;
       font-family: "Press Start 2P", cursive;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
       flex-direction: column;
-      overflow: hidden;
+      align-items: center;
+      text-align: center;
+      overflow-x: hidden;
     }
     #particles-js {
       position: absolute;
@@ -43,16 +41,8 @@
       opacity: 0.8;
       text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
     }
-    .blurred-content {
-      position: relative;
-      z-index: 1;
-      transition: filter 0.3s ease;
-      display: none; /* Initially hidden */
-    }
     .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: fixed;
       width: 100%;
       height: 100%;
       background: rgba(0, 0, 0, 0.8);
@@ -60,12 +50,15 @@
       justify-content: center;
       align-items: center;
       z-index: 10;
-      opacity: 1;
       transition: opacity 0.5s ease;
     }
     .hidden {
       opacity: 0;
       pointer-events: none;
+    }
+    .content {
+      display: none;
+      margin-top: 50px;
     }
     canvas {
       position: absolute;
@@ -75,20 +68,70 @@
       height: 100%;
       z-index: -2;
     }
+    
+    .project-card {
+      width: 80%;
+      max-width: 400px;
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #00ff00;
+      padding: 20px;
+      margin-top: 100vh;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .project-card img {
+      width: 100%;
+      height: auto;
+      border: 2px solid #00ff00;
+    }
+    .project-card h2 {
+      margin-top: 10px;
+      font-size: 1.5rem;
+    }
+    .project-card p {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+    .project-card button {
+      margin-top: 10px;
+      padding: 10px;
+      background: #00ff00;
+      color: #000;
+      border: none;
+      font-family: "Press Start 2P", cursive;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+    .project-card button:hover {
+      background: #ffcc00;
+    }
+    
+    .show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
   <div id="particles-js"></div>
 
   <div class="overlay" id="overlay">
-    <h1>Press click to enter...</h1>
+    <h1>Click anywhere to enter...</h1>
   </div>
 
-  <div class="blurred-content" id="content" style="filter: blur(5px);">
+  <div class="content" id="content">
     <h1>Welcome to VoltSec.xyz!</h1>
     <p id="typewriter"></p>
     <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
     <canvas id="cubeCanvas"></canvas>
+  </div>
+
+  <div class="project-card" id="projectCard">
+    <img src="https://via.placeholder.com/400x200" alt="Project Image">
+    <h2>Project Title</h2>
+    <p>This is a description of one of my projects. More details coming soon!</p>
+    <button>Learn More</button>
   </div>
 
   <script>
@@ -97,8 +140,6 @@
       audio.play().catch(error => console.error("Playback error:", error));
       this.classList.add("hidden");
       document.getElementById("content").style.display = "block";
-      document.getElementById("content").style.filter = "blur(0)";
-      typewriterEffect();
     });
 
     particlesJS("particles-js", {
@@ -124,37 +165,23 @@
       "This typewriter effect took me too long"
     ];
 
-    let phraseIndex = 0;
-    let letterIndex = 0;
-    let deleting = false;
-    const typeSpeed = 100;
-    const pauseTime = 2000;
-    const eraseSpeed = 50;
-
+    let phraseIndex = 0, letterIndex = 0, deleting = false;
     function typewriterEffect() {
       const typewriter = document.getElementById("typewriter");
-
       if (!deleting) {
-        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex);
-        letterIndex++;
-
-        if (letterIndex > phrases[phraseIndex].length) {
-          setTimeout(() => deleting = true, pauseTime);
-        }
+        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex++);
+        if (letterIndex > phrases[phraseIndex].length) setTimeout(() => deleting = true, 2000);
       } else {
-        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex);
-        letterIndex--;
-
+        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex--);
         if (letterIndex === 0) {
           deleting = false;
           phraseIndex = (phraseIndex + 1) % phrases.length;
         }
       }
-
-      setTimeout(typewriterEffect, deleting ? eraseSpeed : typeSpeed);
+      setTimeout(typewriterEffect, deleting ? 50 : 100);
     }
+    typewriterEffect();
 
-    // Three.js cube rendering
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("cubeCanvas"), alpha: true });
@@ -162,13 +189,9 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0xffcc00, wireframe: true });
-    const cube = new THREE.Mesh(geometry, material);
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshBasicMaterial({ color: 0xffcc00, wireframe: true }));
     scene.add(cube);
-
     camera.position.z = 5;
-
     function animate() {
       requestAnimationFrame(animate);
       cube.rotation.x += 0.01;
@@ -176,6 +199,11 @@
       renderer.render(scene, camera);
     }
     animate();
+
+    window.addEventListener("scroll", () => {
+      const projectCard = document.getElementById("projectCard");
+      if (window.scrollY > window.innerHeight / 2) projectCard.classList.add("show");
+    });
   </script>
 </body>
 </html>
