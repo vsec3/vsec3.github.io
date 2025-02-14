@@ -71,30 +71,49 @@
       background: rgba(0, 0, 0, 0.7);
       border: 2px solid #00ff00;
       border-radius: 10px;
-      padding: 20px;
-      margin-top: 30px;
-      max-width: 400px;
-      text-align: left;
+      padding: 30px;
+      margin-top: 50px;
+      max-width: 500px;
+      text-align: center;
       box-shadow: 0 0 10px #00ff00;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .project-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00;
     }
     .project-card h2 {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
+      font-size: 2rem;
+      margin-bottom: 20px;
       text-shadow: 0 0 5px #00ff00;
     }
     .project-card p {
-      font-size: 1rem;
+      font-size: 1.2rem;
       opacity: 0.8;
       text-shadow: 0 0 5px #00ff00;
+      margin-bottom: 20px;
     }
-    .project-card a {
-      color: #00ff00;
-      text-decoration: none;
-      font-weight: bold;
+    .project-card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 2px solid #00ff00;
+    }
+    .project-card .download-button {
+      background: #00ff00;
+      color: #000000;
+      border: none;
+      padding: 10px 20px;
+      font-family: "Press Start 2P", cursive;
+      font-size: 1rem;
+      cursor: pointer;
       text-shadow: 0 0 5px #00ff00;
+      box-shadow: 0 0 10px #00ff00;
+      transition: background 0.3s ease, transform 0.3s ease;
     }
-    .project-card a:hover {
-      text-decoration: underline;
+    .project-card .download-button:hover {
+      background: #00cc00;
+      transform: scale(1.1);
     }
   </style>
 </head>
@@ -113,8 +132,9 @@
     <!-- Project Card -->
     <div class="project-card">
       <h2>Project Title</h2>
+      <img src="https://via.placeholder.com/450x250" alt="Project Image">
       <p>This is a brief description of the project. It showcases some of the cool stuff we're working on.</p>
-      <a href="#" target="_blank">Learn More →</a>
+      <button class="download-button">Download</button>
     </div>
   </div>
 
