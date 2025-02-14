@@ -37,9 +37,21 @@
       font-weight: 600;
     }
     p {
-      font-size: 1.2rem;
+      font-size: 1.5rem;
       margin-top: 10px;
       opacity: 0.8;
+    }
+    .blinking-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 20px;
+      background: white;
+      margin-left: 5px;
+      animation: blink 0.7s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
     }
   </style>
 </head>
@@ -47,7 +59,7 @@
   <div id="particles-js"></div>
 
   <h1>Welcome to VoltSec.xyz!</h1>
-  <p id="typewriter"></p>
+  <p id="typewriter"></p><span class="blinking-cursor"></span>
 
   <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
 
@@ -84,7 +96,7 @@
     let letterIndex = 0;
     let deleting = false;
     const typeSpeed = 100;
-    const pauseTime = 5000;
+    const pauseTime = 2000;
     const eraseSpeed = 50;
 
     function typewriterEffect() {
