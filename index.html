@@ -81,7 +81,7 @@
   <div id="particles-js"></div>
 
   <div class="overlay" id="overlay">
-    <h1>Press Enter to Start!</h1>
+    <h1>Press click to enter...</h1>
   </div>
 
   <div class="blurred-content" id="content" style="filter: blur(5px);">
@@ -96,9 +96,9 @@
       const audio = document.getElementById("audio");
       audio.play().catch(error => console.error("Playback error:", error));
       this.classList.add("hidden");
-      document.getElementById("content").style.display = "block"; // Show content
-      document.getElementById("content").style.filter = "blur(0)"; // Remove blur
-      typewriterEffect(); // Start the typewriter effect
+      document.getElementById("content").style.display = "block";
+      document.getElementById("content").style.filter = "blur(0)";
+      typewriterEffect();
     });
 
     particlesJS("particles-js", {
