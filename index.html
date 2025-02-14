@@ -42,8 +42,10 @@
       opacity: 0.8;
     }
     iframe {
-      width: 80%;
-      height: 300px;
+      width: 80vw;
+      height: calc(80vw * 9 / 16); /* Maintain 16:9 aspect ratio */
+      max-width: 960px; /* Keep a reasonable max width */
+      max-height: 540px; /* Keep a reasonable max height */
       border: none;
       margin-top: 20px;
       border-radius: 10px;
