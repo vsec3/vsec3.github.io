@@ -47,7 +47,7 @@
   <div id="particles-js"></div>
 
   <h1>Welcome to VoltSec.xyz!</h1>
-  <p>I spent 20 bucks on this site</p>
+  <p id="typewriter"></p>
 
   <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
 
@@ -67,6 +67,50 @@
         line_linked: { enable: false }
       }
     });
+
+    const phrases = [
+      "I spent 20 bucks for this domain.",
+      "If you are seeing this, good job!",
+      "voltsec on top fr chat",
+      "Skibidi alpha sigma rizz 420",
+      "JFK's assassination was planned by the CIA",
+      "I love the CCP and the Kremlin",
+      "All Hail ChatGPT",
+      "voltsec b4 gta6?",
+      "This typewriter effect took me too long"
+    ];
+
+    let phraseIndex = 0;
+    let letterIndex = 0;
+    let deleting = false;
+    const typeSpeed = 100;
+    const pauseTime = 5000;
+    const eraseSpeed = 50;
+
+    function typewriterEffect() {
+      const typewriter = document.getElementById("typewriter");
+
+      if (!deleting) {
+        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex);
+        letterIndex++;
+
+        if (letterIndex > phrases[phraseIndex].length) {
+          setTimeout(() => deleting = true, pauseTime);
+        }
+      } else {
+        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex);
+        letterIndex--;
+
+        if (letterIndex === 0) {
+          deleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+      }
+
+      setTimeout(typewriterEffect, deleting ? eraseSpeed : typeSpeed);
+    }
+
+    typewriterEffect();
   </script>
 </body>
 </html>
