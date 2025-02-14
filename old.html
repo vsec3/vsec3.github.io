@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoltSec</title>
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #000000;
+      color: #00ff00;
+      font-family: "Press Start 2P", cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+    }
+    p {
+      font-size: 1.5rem;
+      margin-top: 10px;
+      opacity: 0.8;
+      text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
+    }
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2; /* Ensure the canvas is behind other elements */
+    }
+    h1, p {
+      transition: color 0.3s ease;
+    }
+    h1:hover, p:hover {
+      color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+
+  <h1>Welcome to VoltSec.xyz!</h1>
+  <p id="typewriter"></p>
+  <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
+  <canvas id="cubeCanvas"></canvas>
+
+  <script>
+    document.addEventListener("click", function() {
+      const audio = document.getElementById("audio");
+      audio.play().catch(error => console.error("Playback error:", error));
+    }, { once: true });
+
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 100 },
+        shape: { type: "circle" },
+        opacity: { value: 0.7, random: true },
+        size: { value: 3, random: true },
+        move: { speed: 1, direction: "bottom", out_mode: "out" },
+        line_linked: { enable: false }
+      }
+    });
+
+    const phrases = [
+      "I spent 20 bucks for this domain.",
+      "If you are seeing this, good job!",
+      "voltsec on top fr chat",
+      "Skibidi alpha sigma rizz 420",
+      "JFK's assassination was planned by the CIA",
+      "I love the CCP and the Kremlin",
+      "All Hail ChatGPT",
+      "voltsec b4 gta6?",
+      "This typewriter effect took me too long"
+    ];
+
+    let phraseIndex = 0;
+    let letterIndex = 0;
+    let deleting = false;
+    const typeSpeed = 100;
+    const pauseTime = 2000;
+    const eraseSpeed = 50;
+
+    function typewriterEffect() {
+      const typewriter = document.getElementById("typewriter");
+
+      if (!deleting) {
+        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex);
+        letterIndex++;
+
+        if (letterIndex > phrases[phraseIndex].length) {
+          setTimeout(() => deleting = true, pauseTime);
+        }
+      } else {
+        typewriter.textContent = phrases[phraseIndex].substring(0, letterIndex);
+        letterIndex--;
+
+        if (letterIndex === 0) {
+          deleting = false;
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+        }
+      }
+
+      setTimeout(typewriterEffect, deleting ? eraseSpeed : typeSpeed);
+    }
+
+    typewriterEffect();
+
+    // Three.js cube rendering
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("cubeCanvas"), alpha: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0xffcc00, wireframe: true });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+
+    camera.position.z = 5;
+
+    function animate() {
+      requestAnimationFrame(animate);
+      cube.rotation.x += 0.01;
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
