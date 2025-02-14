@@ -43,12 +43,20 @@
     }
     iframe {
       width: 80vw;
-      height: calc(80vw * 9 / 16); /* Maintain 16:9 aspect ratio */
-      max-width: 960px; /* Keep a reasonable max width */
-      max-height: 540px; /* Keep a reasonable max height */
+      height: calc(80vw * 9 / 16);
+      max-width: 960px;
+      max-height: 540px;
       border: none;
       margin-top: 20px;
       border-radius: 10px;
+
+    h1, p {
+      transition: color 0.3s ease, text-shadow 0.3s ease;
+    }
+    
+    h1:hover, p:hover {
+      color: #ffcc00;
+      text-shadow: 0 0 10px #ffcc00;
     }
   </style>
 </head>
@@ -57,17 +65,21 @@
 
   <h1>Welcome to VoltSec.xyz!</h1>
   <p id="typewriter"></p>
-
   <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
-
-  <!-- Embed meow.camera -->
-  <iframe src="https://meow.camera"></iframe>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <canvas id="cubeCanvas"></canvas>
 
   <script>
     document.addEventListener("click", function() {
       const audio = document.getElementById("audio");
       audio.play().catch(error => console.error("Playback error:", error));
     }, { once: true });
+
+    document.addEventListener("click", function() {
+      const body = document.body;
+      body.style.background = "#ff0000";
+      setTimeout(() => body.style.background = "#2c2c2c", 200);
+    });
 
     particlesJS("particles-js", {
       particles: {
