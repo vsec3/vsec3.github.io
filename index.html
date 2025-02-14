@@ -1,7 +1,20 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test Site</title>
 </head>
 <body>
   <h1>Please load</h1>
+
+  <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
+
+  <script>
+    document.addEventListener("click", function() {
+      const audio = document.getElementById("audio");
+      audio.play().catch(error => console.error("Playback error:", error));
+    }, { once: true });
+  </script>
 </body>
+</html>
