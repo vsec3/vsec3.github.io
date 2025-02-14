@@ -43,35 +43,60 @@
       opacity: 0.8;
       text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00;
     }
+    .blurred-content {
+      position: relative;
+      z-index: 1;
+      transition: filter 0.3s ease;
+    }
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
     canvas {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: -2; /* Ensure the canvas is behind other elements */
-    }
-    h1, p {
-      transition: color 0.3s ease;
-    }
-    h1:hover, p:hover {
-      color: #ffcc00;
+      z-index: -2;
     }
   </style>
 </head>
 <body>
   <div id="particles-js"></div>
 
-  <h1>Welcome to VoltSec.xyz!</h1>
-  <p id="typewriter"></p>
-  <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
-  <canvas id="cubeCanvas"></canvas>
+  <div class="overlay" id="overlay">
+    <h1>Press Enter to Start!</h1>
+  </div>
+
+  <div class="blurred-content" id="content" style="filter: blur(5px);">
+    <h1>Welcome to VoltSec.xyz!</h1>
+    <p id="typewriter"></p>
+    <audio id="audio" src="https://raw.githubusercontent.com/vsec3/vsec3.github.io/main/familyties.mp3"></audio>
+    <canvas id="cubeCanvas"></canvas>
+  </div>
 
   <script>
-    document.addEventListener("click", function() {
+    document.getElementById("overlay").addEventListener("click", function() {
       const audio = document.getElementById("audio");
       audio.play().catch(error => console.error("Playback error:", error));
-    }, { once: true });
+      this.classList.add("hidden");
+      document.getElementById("content").style.filter = "blur(0)";
+    });
 
     particlesJS("particles-js", {
       particles: {
