@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitr Wiki</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .cat-container { display: flex; flex-wrap: wrap; }
+        .cat-card { border: 1px solid #ccc; border-radius: 8px; margin: 10px; padding: 10px; width: 200px; text-align: center; }
+        .cat-card img { max-width: 100%; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Kitr Wiki</h1>
+    <input type="text" id="search" placeholder="Search for a cat..." onkeyup="filterCats()">
+    <div class="cat-container" id="catContainer"></div>
+
+    <script>
+        const cats = [
+            { "name": "Average Cat", "rarity": "normal", "image": "cat_images/normal_cat1.jpg" },
+            { "name": "Fancy Cat", "rarity": "normal", "image": "cat_images/normal_cat2.jpg" },
+            { "name": "Sobbing Cat", "rarity": "normal", "image": "cat_images/normal_cat3.jpg" },
+            { "name": "Blushing Cat", "rarity": "normal", "image": "cat_images/normal_cat4.jpg" },
+            { "name": "tac", "rarity": "normal", "image": "cat_images/normal_cat5.jpg" },
+            { "name": "Invisible Cat", "rarity": "normal", "image": "cat_images/normal_cat6.jpg" },
+            { "name": "B&W Cat", "rarity": "normal", "image": "cat_images/normal_cat7.jpg" },
+            { "name": "Wavy Cat", "rarity": "normal", "image": "cat_images/normal_cat8.jpg" },
+            { "name": "Crystallized Cat", "rarity": "normal", "image": "cat_images/normal_cat9.jpg" },
+            { "name": "Banana Cat", "rarity": "normal", "image": "cat_images/normal_cat10.jpg" },
+            { "name": "Lonely Cat", "rarity": "normal", "image": "cat_images/normal_cat11.jpg" },
+            { "name": "Censored Cat", "rarity": "rare", "image": "cat_images/rare_cat1.jpg" },
+            { "name": "Ghost Cat", "rarity": "rare", "image": "cat_images/rare_cat2.jpg" },
+            { "name": "Kigger", "rarity": "rare", "image": "cat_images/rare_cat3.jpg" },
+            { "name": "Elongated Cat", "rarity": "rare", "image": "cat_images/rare_cat4.jpg" },
+            { "name": "Braindead Cat", "rarity": "rare", "image": "cat_images/rare_cat5.jpg" },
+            { "name": "XP Cat", "rarity": "rare", "image": "cat_images/rare_cat6.jpg" },
+            { "name": "Oil Painting Cat", "rarity": "rare", "image": "cat_images/rare_cat7.jpg" },
+            { "name": "Pirate Cat", "rarity": "rare", "image": "cat_images/rare_cat8.jpg" },
+            { "name": "2 Of Cats", "rarity": "rare", "image": "cat_images/rare_cat9.jpg" },
+            { "name": "Ducky Cat", "rarity": "rare", "image": "cat_images/rare_cat10.jpg" },
+            { "name": "Inverted Cat", "rarity": "epic", "image": "cat_images/epic_cat1.jpg" },
+            { "name": "Murderous Cat", "rarity": "epic", "image": "cat_images/epic_cat2.jpg" },
+            { "name": "Sleepy Cat", "rarity": "epic", "image": "cat_images/epic_cat3.jpg" },
+            { "name": "Incineration", "rarity": "epic", "image": "cat_images/epic_cat4.jpg" },
+            { "name": "Catception", "rarity": "epic", "image": "cat_images/epic_cat5.jpg" },
+            { "name": "Glitched Cat", "rarity": "epic", "image": "cat_images/epic_cat6.jpg" },
+            { "name": "Batcat", "rarity": "epic", "image": "cat_images/epic_cat7.jpg" },
+            { "name": "Sans Cat", "rarity": "epic", "image": "cat_images/epic_cat8.jpg" },
+            { "name": "Angelic Cat", "rarity": "exotic", "image": "cat_images/exotic_cat1.jpg" },
+            { "name": "Kaleidoscope Cat", "rarity": "exotic", "image": "cat_images/exotic_cat2.jpg" }
+        ];
+
+        function displayCats(catList) {
+            const container = document.getElementById('catContainer');
+            container.innerHTML = '';
+            catList.forEach(cat => {
+                const catCard = document.createElement('div');
+                catCard.className = 'cat-card';
+                catCard.innerHTML = `
+                    <img src="${cat.image}" alt="${cat.name}">
+                    <h3>${cat.name}</h3>
+                    <p>Rarity: ${cat.rarity}</p>
+                `;
+                container.appendChild(catCard);
+            });
+        }
+
+        function filterCats() {
+            const searchInput = document.getElementById('search').value.toLowerCase();
+            const filteredCats = cats.filter(cat => cat.name.toLowerCase().includes(searchInput));
+            displayCats(filteredCats);
+        }
+
+        displayCats(cats);
+    </script>
+</body>
+</html>
