@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rick and Morty Season 8 Countdown</title>
+  <title>no title i guess</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,17 +19,21 @@
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 1rem;
+      margin: 1rem 0 0.5rem;
     }
 
-    #countdown {
-      font-size: 2.5rem;
+    .countdown {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
     }
   </style>
 </head>
 <body>
   <h1>Rick and Morty Season 8 Releases in:</h1>
-  <div id="countdown">Loading...</div>
+  <div id="countdown1" class="countdown">Loading...</div>
+
+  <h1>Deltarune Chapters 3 + 4 Release in:</h1>
+  <div id="countdown2" class="countdown">Loading...</div>
 
   <audio id="tick1" src="tick1.mp3" preload="auto"></audio>
   <audio id="tick2" src="tick2.mp3" preload="auto"></audio>
@@ -40,21 +44,17 @@
     let useFirstTick = true;
 
     function playTick() {
-      const sound = useFirstTick ? tick1 : tick2;
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
+      const tick = useFirstTick ? tick1 : tick2;
+      tick.currentTime = 0;
+      tick.play().catch(() => {});
       useFirstTick = !useFirstTick;
     }
 
-    function updateCountdown() {
+    function formatCountdown(targetDate) {
       const now = new Date();
-      const target = new Date(now.getFullYear(), 4, 25);
+      const target = new Date(now.getFullYear(), targetDate.month, targetDate.day);
 
-      if (now >= target) {
-        document.getElementById("countdown").textContent = "RELEASED!";
-        clearInterval(timer);
-        return;
-      }
+      if (now >= target) return "RELEASED!";
 
       const diff = target - now;
 
@@ -63,14 +63,21 @@
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
       const seconds = Math.floor((diff / 1000) % 60);
 
-      document.getElementById("countdown").textContent = 
-        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    function updateCountdowns() {
+      const rmDate = { month: 4, day: 25 };
+      const drDate = { month: 5, day: 5 };
+
+      document.getElementById("countdown1").textContent = formatCountdown(rmDate);
+      document.getElementById("countdown2").textContent = formatCountdown(drDate);
 
       playTick();
     }
 
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
+    updateCountdowns();
+    const timer = setInterval(updateCountdowns, 1000);
   </script>
 </body>
 </html>
