@@ -31,7 +31,21 @@
   <h1>Rick and Morty Season 8 Releases in:</h1>
   <div id="countdown">Loading...</div>
 
+  <audio id="tick1" src="tick1.mp3" preload="auto"></audio>
+  <audio id="tick2" src="tick2.mp3" preload="auto"></audio>
+
   <script>
+    const tick1 = document.getElementById("tick1");
+    const tick2 = document.getElementById("tick2");
+    let useFirstTick = true;
+
+    function playTick() {
+      const sound = useFirstTick ? tick1 : tick2;
+      sound.currentTime = 0;
+      sound.play().catch(() => {});
+      useFirstTick = !useFirstTick;
+    }
+
     function updateCountdown() {
       const now = new Date();
       const target = new Date(now.getFullYear(), 4, 25);
@@ -51,6 +65,8 @@
 
       document.getElementById("countdown").textContent = 
         `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+      playTick();
     }
 
     updateCountdown();
