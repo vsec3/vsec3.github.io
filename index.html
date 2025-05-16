@@ -1,32 +1,60 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-<title>I hate neopronouns</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rick and Morty Season 8 Countdown</title>
   <style>
-    p1 {
-      display: block;
-      margin-bottom: 1em;
-      font-family: sans-serif
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
     }
+
     h1 {
-        font-family: sans-serif
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #countdown {
+      font-size: 2.5rem;
     }
   </style>
 </head>
 <body>
-<h1>GOD I HATE THESE FUCKING NEO PRONOUN LOSERS</h1>
-  <p1>I hate anybody who uses these bullshit neopronouns. I fucking hate them. All of them deserve to rot in hell.</p1>
-  <p1> >> THERE ARE TWO GENDERS!! STARGENDER IS NOT A GENDER, XE / XIR IS NOT REAL, ALL THESE FUCKING NEOPRONOUN LOSERS ARE ACTUAL RETARDS! </p1>
-  <p1>And the worst part of it all? I got so many DM's for using the wrong fucking pronouns that I got demoted from 4 servers for it. 4 FUCKING SERVERS</p1>
-  <p1>Sorry for fucking misgendering someone, didnt know you were a xixexirstarretardspecialedfaggot I didnt know man so sorry</p1>
-  <p1>Being a discord bot developer and getting into this much "drama" is insane, these kids on discord need to chill the fuck out.</p1>
-  <p1>td;lr I hate neopronouns and anybody who uses them</p1>
+  <h1>Rick and Morty Season 8 Releases in:</h1>
+  <div id="countdown">Loading...</div>
+
   <script>
-    const paragraphs = document.querySelectorAll('p');
-    paragraphs.forEach((p, i) => {
-      if (i < paragraphs.length - 1) {
-        const br = document.createElement('br');
-        p.parentNode.insertBefore(br, p.nextSibling);
+    function updateCountdown() {
+      const now = new Date();
+      const target = new Date(now.getFullYear(), 4, 25);
+
+      if (now >= target) {
+        document.getElementById("countdown").textContent = "RELEASED!";
+        clearInterval(timer);
+        return;
       }
-    });
+
+      const diff = target - now;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById("countdown").textContent = 
+        `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
   </script>
 </body>
+</html>
