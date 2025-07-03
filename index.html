@@ -31,6 +31,38 @@
       color: #ccc;
     }
 
+    .button-group {
+      margin-top: 1.2rem;
+    }
+
+    .join-btn, .discord-btn {
+      display: inline-block;
+      margin: 0.3rem 0.5rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .join-btn {
+      background-color: #00ffaa;
+      color: #000;
+    }
+
+    .join-btn:hover {
+      background-color: #00cc88;
+    }
+
+    .discord-btn {
+      background-color: #5865F2;
+      color: #fff;
+    }
+
+    .discord-btn:hover {
+      background-color: #4752c4;
+    }
+
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -72,22 +104,6 @@
       color: #777;
     }
 
-    .join-btn {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      background-color: #00ffaa;
-      color: #000;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-
-    .join-btn:hover {
-      background-color: #00cc88;
-    }
-
     @media screen and (max-width: 768px) {
       .card {
         width: 90%;
@@ -99,7 +115,10 @@
   <header>
     <h1>Welcome to Quicksand!</h1>
     <p>Wiremod, PAC3, Adv Duplicator, Custom Logs & Active Community</p>
-    <a class="join-btn" href="steam://connect/71.164.108.249:25013">Join Now</a>
+    <div class="button-group">
+      <a class="join-btn" href="steam://connect/71.164.108.249:25013">Join Now</a>
+      <a class="discord-btn" href="https://discord.gg/4MhPUWtWRQ" target="_blank">Join Discord</a>
+    </div>
   </header>
 
   <div class="container">
@@ -109,7 +128,7 @@
     </div>
     <div class="card">
       <h2>🎭 PAC3</h2>
-      <p>Express yourself with full PAC3 support! design custom avatars, animations, and effects.</p>
+      <p>Express yourself with full PAC3 support! Design custom avatars, animations, and effects.</p>
     </div>
     <div class="card">
       <h2>📁 Adv Duplicator</h2>
