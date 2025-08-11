@@ -1,348 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Game Wiki</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #555555;
-    color: #eee;
-  }
-  header {
-    background-color: #333;
-    padding: 1rem 2rem;
-    font-size: 1.8rem;
-    font-weight: bold;
-    user-select: none;
-  }
-  nav {
-    display: flex;
-    background-color: #444;
-    user-select: none;
-  }
-  nav button {
-    flex: 1;
-    background: none;
-    border: none;
-    color: #eee;
-    padding: 1rem 0;
-    cursor: pointer;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease;
-  }
-  nav button:hover {
-    background-color: #666;
-  }
-  nav button.active {
-    background-color: #222;
-    font-weight: bold;
-    color: #fff;
-  }
-  main {
-    padding: 1.5rem 2rem;
-    min-height: 80vh;
-  }
-  /* Items grid */
-  .items-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
-    gap: 1rem;
-  }
-  .item-card {
-    background: #444;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 0 8px #222 inset;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .item-image {
-    width: 128px;
-    height: 128px;
-    background-color: #222;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
-    margin-bottom: 0.75rem;
-    border-radius: 6px;
-    box-shadow: 0 0 5px #111 inset;
-  }
-  .item-name {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
-    text-align: center;
-  }
-  .item-toolname {
-    font-size: 0.9rem;
-    font-style: italic;
-    color: #bbb;
-    margin-bottom: 0.5rem;
-  }
-  .item-desc {
-    font-size: 1rem;
-    text-align: center;
-    margin-bottom: 0.5rem;
-  }
-  .item-wins {
-    font-size: 0.9rem;
-    color: #ccc;
-  }
-  /* Features & Tech template */
-  .template-placeholder {
-    font-style: italic;
-    opacity: 0.6;
-    text-align: center;
-    margin-top: 3rem;
-    font-size: 1.2rem;
-    user-select: none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Wiki</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+        nav a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            flex: 1;
+        }
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            margin: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .active-tab {
+            display: block;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .item img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .item h3 {
+            margin: 0;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Game Wiki</h1>
+    </header>
+    <nav>
+        <a href="#" onclick="showTab('items')">Items</a>
+        <a href="#" onclick="showTab('features')">Features</a>
+        <a href="#" onclick="showTab('techs')">Techs</a>
+    </nav>
+    <div id="items" class="tab-content">
+        <h2>Items</h2>
+        <div id="items-list"></div>
+    </div>
+    <div id="features" class="tab-content">
+        <h2>Features</h2>
+        <p>Content for Features tab goes here.</p>
+    </div>
+    <div id="techs" class="tab-content">
+        <h2>Techs</h2>
+        <p>Content for Techs tab goes here.</p>
+    </div>
 
-<header>Game Wiki</header>
-<nav>
-  <button id="tab-items" class="active" onclick="switchTab('items')">Items</button>
-  <button id="tab-features" onclick="switchTab('features')">Features</button>
-  <button id="tab-techs" onclick="switchTab('techs')">Techs</button>
-</nav>
-<main id="content">
+    <script>
+        const WeaponConfig = {
+            Primary: [
+                {
+                    DisplayName: "Bat",
+                    ToolName: "Bat",
+                    Description: "The replacement to fists.",
+                    WinsRequired: 0,
+                    Image: "rbxassetid://14434989783"
+                },
+                {
+                    DisplayName: "Sword",
+                    ToolName: "R6Sword",
+                    Description: "Fully animated sword! To be updated to add blocking and finishers.",
+                    WinsRequired: 0,
+                    Image: "rbxassetid://534533607"
+                },
+                {
+                    DisplayName: "Grenade",
+                    ToolName: "Grenade",
+                    Description: "BOOM! 5 Second Cooldown, explodes in 0.7 seconds.",
+                    WinsRequired: 3,
+                    Image: "rbxassetid://79239045898157"
+                },
+                {
+                    DisplayName: "Crossbow",
+                    ToolName: "Crossbow",
+                    Description: "Deals a heavy 25 damage! But, It is hard to aim..",
+                    WinsRequired: 5,
+                    Image: "rbxassetid://14012663380"
+                },
+                {
+                    DisplayName: "Tripmine",
+                    ToolName: "Tripmine",
+                    Description: "Plant a tripmine that instantly kills anyone who crosses it!",
+                    WinsRequired: 5,
+                    Image: "rbxassetid://9289962773"
+                },
+                {
+                    DisplayName: "Bow",
+                    ToolName: "Bow",
+                    Description: "An overall better version of the crossbow. Better damage, better range, better speed.",
+                    WinsRequired: 25,
+                    Image: "rbxassetid://391860091"
+                },
+                {
+                    DisplayName: "Real Knife (ADMIN)",
+                    ToolName: "Real Knife",
+                    Description: "'cause if you take another step forward... you are REALLY not going to like what happens next.",
+                    WinsRequired: 99999,
+                    Image: "rbxassetid://5514664147"
+                }
+            ],
+            Secondary: [
+                {
+                    DisplayName: "Locator",
+                    ToolName: "Locator",
+                    Description: "I mean, why prospect when you can detect? Shows you the highlight of a random player for 5 seconds. 30s Cooldown.",
+                    WinsRequired: 0,
+                    Image: "rbxassetid://84194925391921"
+                },
+                {
+                    DisplayName: "Flashbang",
+                    ToolName: "Flashbang",
+                    Description: "One time use flashbang. Very powerful, lasts up to 5 seconds at close range!!",
+                    WinsRequired: 0,
+                    Image: "rbxassetid://10753198321"
+                },
+                {
+                    DisplayName: "Molotov",
+                    ToolName: "Molotov",
+                    Description: "One time use molotov. Insane crowd potential! Lots of damage and hard to evacuate!",
+                    WinsRequired: 0,
+                    Image: "rbxassetid://65242755"
+                },
+                {
+                    DisplayName: "Decoy",
+                    ToolName: "Decoy",
+                    Description: "Create a decoy of yourself to trick your foes!",
+                    WinsRequired: 3,
+                    Image: "rbxassetid://61115552"
+                },
+                {
+                    DisplayName: "Trowel",
+                    ToolName: "Trowel",
+                    Description: "Create barriers to prevent your foes from attacking!",
+                    WinsRequired: 5,
+                    Image: "rbxassetid://17630649150"
+                },
+                {
+                    DisplayName: "S. Oil",
+                    ToolName: "Snake Oil",
+                    Description: "This is basically bloxy cola but way better. It is very complicated though, so please refer to the wiki for information.",
+                    WinsRequired: 5,
+                    Image: "rbxassetid://17630649150"
+                },
+                {
+                    DisplayName: "Slateskin",
+                    ToolName: "Slateskin",
+                    Description: "I AM IMPENETRABLE! Tankiness at the cost of speed.",
+                    WinsRequired: 10,
+                    Image: "rbxassetid://140070318347377"
+                },
+                {
+                    DisplayName: "Bloxy Cola",
+                    ToolName: "Bloxy Cola",
+                    Description: "Take a sip of the cola to gain a 160% speed boost! You are slowed down 90% while drinking though, making you extremely vulnerable",
+                    WinsRequired: 15,
+                    Image: "rbxassetid://6740238869"
+                },
+                {
+                    DisplayName: "G. Hook",
+                    ToolName: "GrappleHook",
+                    Description: "Full name Grappling Hook, lets you grapple. with a hook.",
+                    WinsRequired: 30,
+                    Image: "rbxassetid://83202981929006"
+                },
+                {
+                    DisplayName: "Q. Locator",
+                    ToolName: "Quantum Locator",
+                    Description: "(BROKEN, TBR) I mean... detection? Full name of item is Quantum Locator. Will deal 50 damage with a lightning beam to the player as they are being highlighted, they are slowed down 25%. Targets closest player instead of random player. Strange sounds vibrate in the machine.",
+                    WinsRequired: 50,
+                    Image: "rbxassetid://7151778302"
+                },
+                {
+                    DisplayName: "Heal (ADMIN)",
+                    ToolName: "Heal",
+                    Description: "Instantly rejuvenate someones health. To be paired with Real Knife",
+                    WinsRequired: 99999,
+                    Image: "rbxassetid://14895385109"
+                }
+            ]
+        };
 
-<!-- Items content will be inserted here dynamically -->
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active-tab'));
+            document.getElementById(tabName).classList.add('active-tab');
+        }
 
-</main>
+        async function fetchImageUrl(assetId) {
+            const url = `https://thumbnails.roblox.com/v1/assets?assetIds=${assetId}&size=150x150&format=Png&isCircular=false`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.data[0]?.imageUrl || '';
+        }
 
-<script>
-  // WeaponConfig from your data
-  const WeaponConfig = {
-    Primary: [
-      {
-        DisplayName: "Bat",
-        ToolName: "Bat",
-        Description: "The replacement to fists.",
-        WinsRequired: 0,
-        Image: "rbxassetid://14434989783"
-      },
-      {
-        DisplayName: "Sword",
-        ToolName: "R6Sword",
-        Description: "Fully animated sword! To be updated to add blocking and finishers.",
-        WinsRequired: 0,
-        Image: "rbxassetid://534533607"
-      },
-      {
-        DisplayName: "Grenade",
-        ToolName: "Grenade",
-        Description: "BOOM! 5 Second Cooldown, explodes in 0.7 seconds.",
-        WinsRequired: 3,
-        Image: "rbxassetid://79239045898157"
-      },
-      {
-        DisplayName: "Crossbow",
-        ToolName: "Crossbow",
-        Description: "Deals a heavy 25 damage! But, It is hard to aim..",
-        WinsRequired: 5,
-        Image: "rbxassetid://14012663380"
-      },
-      {
-        DisplayName: "Tripmine",
-        ToolName: "Tripmine",
-        Description: "Plant a tripmine that instantly kills anyone who crosses it!",
-        WinsRequired: 5,
-        Image: "rbxassetid://9289962773"
-      },
-      {
-        DisplayName: "Bow",
-        ToolName: "Bow",
-        Description: "An overall better version of the crossbow. Better damage, better range, better speed.",
-        WinsRequired: 25,
-        Image: "rbxassetid://391860091"
-      },
-      {
-        DisplayName: "Real Knife (ADMIN)",
-        ToolName: "Real Knife",
-        Description: "'cause if you take another step forward... you are REALLY not going to like what happens next.",
-        WinsRequired: 99999,
-        Image: "rbxassetid://5514664147"
-      }
-    ],
-    Secondary: [
-      {
-        DisplayName: "Locator",
-        ToolName: "Locator",
-        Description: "I mean, why prospect when you can detect? Shows you the highlight of a random player for 5 seconds. 30s Cooldown.",
-        WinsRequired: 0,
-        Image: "rbxassetid://84194925391921"
-      },
-      {
-        DisplayName: "Flashbang",
-        ToolName: "Flashbang",
-        Description: "One time use flashbang. Very powerful, lasts up to 5 seconds at close range!!",
-        WinsRequired: 0,
-        Image: "rbxassetid://10753198321"
-      },
-      {
-        DisplayName: "Molotov",
-        ToolName: "Molotov",
-        Description: "One time use molotov. Insane crowd potential! Lots of damage and hard to evacuate!",
-        WinsRequired: 0,
-        Image: "rbxassetid://65242755"
-      },
-      {
-        DisplayName: "Decoy",
-        ToolName: "Decoy",
-        Description: "Create a decoy of yourself to trick your foes!",
-        WinsRequired: 3,
-        Image: "rbxassetid://61115552"
-      },
-      {
-        DisplayName: "Trowel",
-        ToolName: "Trowel",
-        Description: "Create barriers to prevent your foes from attacking!",
-        WinsRequired: 5,
-        Image: "rbxassetid://17630649150"
-      },
-      {
-        DisplayName: "S. Oil",
-        ToolName: "Snake Oil",
-        Description: "This is basically bloxy cola but way better. It is very complicated though, so please refer to the wiki for information.",
-        WinsRequired: 5,
-        Image: "rbxassetid://17630649150"
-      },
-      {
-        DisplayName: "Slateskin",
-        ToolName: "Slateskin",
-        Description: "I AM IMPENETRABLE! Tankiness at the cost of speed.",
-        WinsRequired: 10,
-        Image: "rbxassetid://140070318347377"
-      },
-      {
-        DisplayName: "Bloxy Cola",
-        ToolName: "Bloxy Cola",
-        Description: "Take a sip of the cola to gain a 160% speed boost! You are slowed down 90% while drinking though, making you extremely vulnerable",
-        WinsRequired: 15,
-        Image: "rbxassetid://6740238869"
-      },
-      {
-        DisplayName: "G. Hook",
-        ToolName: "GrappleHook",
-        Description: "Full name Grappling Hook, lets you grapple. with a hook.",
-        WinsRequired: 30,
-        Image: "rbxassetid://83202981929006"
-      },
-      {
-        DisplayName: "Q. Locator",
-        ToolName: "Quantum Locator",
-        Description: "(BROKEN, TBR) I mean... detection? Full name of item is Quantum Locator. Will deal 50 damage with a lightning beam to the player as they are being highlighted, they are slowed down 25%. Targets closest player instead of random player. Strange sounds vibrate in the machine.",
-        WinsRequired: 50,
-        Image: "rbxassetid://7151778302"
-      },
-      {
-        DisplayName: "Heal (ADMIN)",
-        ToolName: "Heal",
-        Description: "Instantly rejuvenate someones health. To be paired with Real Knife",
-        WinsRequired: 99999,
-        Image: "rbxassetid://14895385109"
-      }
-    ]
-  };
+        async function loadItems() {
+            const itemsList = document.getElementById('items-list');
+            WeaponConfig.Primary.forEach(async (item) => {
+                const imageUrl = await fetchImageUrl(item.Image.split('://')[1]);
+                const itemElement = document.createElement('div');
+                itemElement.classList.add('item');
+                itemElement.innerHTML = `
+                    <img src="${imageUrl}" alt="${item.DisplayName}">
+                    <div>
+                        <h3>${item.DisplayName}</h3>
+                        <p>${item.Description}</p>
+                        <p><strong>Wins Required:</strong> ${item.WinsRequired}</p>
+                    </div>
+                `;
+                itemsList.appendChild(itemElement);
+            });
+        }
 
-  // Helper to get image url from Roblox assetid string
-  // Roblox images can be fetched from https://www.roblox.com/asset/?id=ASSETID (using numeric id)
-  // We'll parse out the numeric part from the rbxassetid string
-  function getRobloxImageUrl(rbxAssetId) {
-    const match = rbxAssetId.match(/rbxassetid:\/\/(\d+)/);
-    if (!match) return "";
-    return `https://www.roblox.com/asset/?id=${match[1]}`;
-  }
-
-  // Function to generate items tab content
-  function generateItemsContent() {
-    const container = document.createElement("div");
-    container.className = "items-grid";
-
-    // Iterate Primary and Secondary items
-    ["Primary", "Secondary"].forEach(category => {
-      const categoryItems = WeaponConfig[category];
-      if (!categoryItems) return;
-
-      // Category header
-      const header = document.createElement("h2");
-      header.textContent = category + " Weapons";
-      header.style.gridColumn = "1 / -1";
-      header.style.marginTop = "2rem";
-      container.appendChild(header);
-
-      categoryItems.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "item-card";
-
-        const img = document.createElement("div");
-        img.className = "item-image";
-        img.style.backgroundImage = `url('${getRobloxImageUrl(item.Image)}')`;
-        card.appendChild(img);
-
-        const name = document.createElement("div");
-        name.className = "item-name";
-        name.textContent = item.DisplayName;
-        card.appendChild(name);
-
-        const toolName = document.createElement("div");
-        toolName.className = "item-toolname";
-        toolName.textContent = `Tool Name: ${item.ToolName}`;
-        card.appendChild(toolName);
-
-        const desc = document.createElement("div");
-        desc.className = "item-desc";
-        desc.textContent = item.Description;
-        card.appendChild(desc);
-
-        const wins = document.createElement("div");
-        wins.className = "item-wins";
-        wins.textContent = `Wins Required: ${item.WinsRequired}`;
-        card.appendChild(wins);
-
-        container.appendChild(card);
-      });
-    });
-
-    return container;
-  }
-
-  // Templates for features and techs tabs
-  function generateTemplateContent(title) {
-    const div = document.createElement("div");
-    div.className = "template-placeholder";
-    div.textContent = `This is the placeholder for the ${title} tab. Please fill it out.`;
-    return div;
-  }
-
-  function switchTab(tab) {
-    // Update nav buttons active state
-    document.querySelectorAll("nav button").forEach(btn => {
-      btn.classList.toggle("active", btn.id === "tab-" + tab);
-    });
-
-    const content = document.getElementById("content");
-    content.innerHTML = "";
-
-    if (tab === "items") {
-      content.appendChild(generateItemsContent());
-    } else if (tab === "features") {
-      content.appendChild(generateTemplateContent("features"));
-    } else if (tab === "techs") {
-      content.appendChild(generateTemplateContent("techs"));
-    }
-  }
-
-  // Initialize page with items tab
-  switchTab("items");
-</script>
-
+        window.onload = () => {
+            showTab('items');
+            loadItems();
+        };
+    </script>
 </body>
 </html>
