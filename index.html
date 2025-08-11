@@ -1,263 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Quicksand</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: #111;
-      color: #eee;
-    }
-
-    header {
-      background: #222;
-      padding: 2rem;
-      text-align: center;
-      border-bottom: 2px solid #444;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-      color: #00ffaa;
-    }
-
-    header p {
-      margin-top: 0.5rem;
-      font-size: 1.2rem;
-      color: #ccc;
-    }
-
-    .button-group {
-      margin-top: 1.2rem;
-    }
-
-    .join-btn, .discord-btn {
-      display: inline-block;
-      margin: 0.3rem 0.5rem;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-
-    .join-btn {
-      background-color: #00ffaa;
-      color: #000;
-    }
-
-    .join-btn:hover {
-      background-color: #00cc88;
-    }
-
-    .discord-btn {
-      background-color: #5865F2;
-      color: #fff;
-    }
-
-    .discord-btn:hover {
-      background-color: #4752c4;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 2rem;
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: #1c1c1c;
-      border: 1px solid #333;
-      border-radius: 12px;
-      padding: 1.5rem;
-      width: 280px;
-      box-shadow: 0 0 10px #000;
-      transition: 0.3s;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-      border-color: #00ffaa;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: #00ffaa;
-    }
-
-    .card p {
-      color: #bbb;
-      font-size: 0.95rem;
-    }
-
-    .rules-section {
-      padding: 2rem;
-      max-width: 900px;
-      margin: 0 auto;
-      background: #151515;
-      border: 1px solid #333;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-    }
-
-    .rules-section h2 {
-      font-size: 2rem;
-      color: #00ffaa;
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .dropdown {
-      margin-bottom: 1rem;
-      border: 1px solid #333;
-      border-radius: 8px;
-      background: #1c1c1c;
-      overflow: hidden;
-    }
-
-    .dropdown summary {
-      cursor: pointer;
-      padding: 1rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #00ffaa;
-      background-color: #222;
-      list-style: none;
-    }
-
-    .dropdown summary::marker {
-      display: none;
-    }
-
-    .dropdown ul {
-      margin: 0;
-      padding: 1rem 1.5rem;
-      list-style-type: none;
-    }
-
-    .dropdown li {
-      padding: 0.4rem 0;
-      color: #ccc;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background: #181818;
-      font-size: 0.9rem;
-      color: #777;
-    }
-
-    @media screen and (max-width: 768px) {
-      .card {
-        width: 90%;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Game Wiki</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #555555;
+    color: #eee;
+  }
+  header {
+    background-color: #333;
+    padding: 1rem 2rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+    user-select: none;
+  }
+  nav {
+    display: flex;
+    background-color: #444;
+    user-select: none;
+  }
+  nav button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #eee;
+    padding: 1rem 0;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+  }
+  nav button:hover {
+    background-color: #666;
+  }
+  nav button.active {
+    background-color: #222;
+    font-weight: bold;
+    color: #fff;
+  }
+  main {
+    padding: 1.5rem 2rem;
+    min-height: 80vh;
+  }
+  /* Items grid */
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    gap: 1rem;
+  }
+  .item-card {
+    background: #444;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 0 8px #222 inset;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .item-image {
+    width: 128px;
+    height: 128px;
+    background-color: #222;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-bottom: 0.75rem;
+    border-radius: 6px;
+    box-shadow: 0 0 5px #111 inset;
+  }
+  .item-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    text-align: center;
+  }
+  .item-toolname {
+    font-size: 0.9rem;
+    font-style: italic;
+    color: #bbb;
+    margin-bottom: 0.5rem;
+  }
+  .item-desc {
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+  .item-wins {
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+  /* Features & Tech template */
+  .template-placeholder {
+    font-style: italic;
+    opacity: 0.6;
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 1.2rem;
+    user-select: none;
+  }
+</style>
 </head>
 <body>
-  <header>
-    <h1>Welcome to Quicksand!</h1>
-    <p>Wiremod, PAC3, Adv Duplicator, Custom Logs & Active Community</p>
-    <div class="button-group">
-      <a class="join-btn" href="steam://connect/71.164.108.249:25013">Join Now</a>
-      <a class="join-btn" href="https://discord.gg/4MhPUWtWRQ" target="_blank">Join Discord</a>
-    </div>
-  </header>
 
-  <div class="container">
-    <div class="card">
-      <h2>⚡ Wiremod</h2>
-      <p>Create circuits, automate contraptions, and push your creativity to its limit with full Wiremod support.</p>
-    </div>
-    <div class="card">
-      <h2>🎭 PAC3</h2>
-      <p>Express yourself with full PAC3 support! Design custom avatars, animations, and effects.</p>
-    </div>
-    <div class="card">
-      <h2>📁 Adv Duplicator</h2>
-      <p>Save, share, and re-use your builds easily with Advanced Duplicator. Collaborate with other players effortlessly.</p>
-    </div>
-    <div class="card">
-      <h2>📜 Quiclogs</h2>
-      <p>We use a custom-built logging system for enhanced admin control, fairness, and transparency.</p>
-    </div>
-    <div class="card">
-      <h2>🌍 Active Community</h2>
-      <p>Join a friendly, active player base. Frequent events, builds, and collaborations happening daily.</p>
-    </div>
-  </div>
+<header>Game Wiki</header>
+<nav>
+  <button id="tab-items" class="active" onclick="switchTab('items')">Items</button>
+  <button id="tab-features" onclick="switchTab('features')">Features</button>
+  <button id="tab-techs" onclick="switchTab('techs')">Techs</button>
+</nav>
+<main id="content">
 
-  <div class="rules-section">
-    <h2>📜 Server Rules</h2>
+<!-- Items content will be inserted here dynamically -->
 
-    <details class="dropdown">
-      <summary>1. RDM (Random Deathmatch)</summary>
-      <ul>
-        <li><strong>1.1</strong> No propkilling other players without a valid reason.</li>
-        <li><strong>1.2</strong> No spawnkill.</li>
-      </ul>
-    </details>
+</main>
 
-    <details class="dropdown">
-      <summary>2. Props & Building</summary>
-      <ul>
-        <li><strong>2.1</strong> Any propspam or crashing will not be tolerated.</li>
-        <li><strong>2.2</strong> No propblocking spawn or toolgun abuse.</li>
-        <li><strong>2.3</strong> Respect server performance with your builds. Nothing too crazy.</li>
-        <li><strong>2.4</strong> No blocking other peoples builds.</li>
-        <li><strong>2.5</strong> No propminge or propblock.</li>
-      </ul>
-    </details>
+<script>
+  // WeaponConfig from your data
+  const WeaponConfig = {
+    Primary: [
+      {
+        DisplayName: "Bat",
+        ToolName: "Bat",
+        Description: "The replacement to fists.",
+        WinsRequired: 0,
+        Image: "rbxassetid://14434989783"
+      },
+      {
+        DisplayName: "Sword",
+        ToolName: "R6Sword",
+        Description: "Fully animated sword! To be updated to add blocking and finishers.",
+        WinsRequired: 0,
+        Image: "rbxassetid://534533607"
+      },
+      {
+        DisplayName: "Grenade",
+        ToolName: "Grenade",
+        Description: "BOOM! 5 Second Cooldown, explodes in 0.7 seconds.",
+        WinsRequired: 3,
+        Image: "rbxassetid://79239045898157"
+      },
+      {
+        DisplayName: "Crossbow",
+        ToolName: "Crossbow",
+        Description: "Deals a heavy 25 damage! But, It is hard to aim..",
+        WinsRequired: 5,
+        Image: "rbxassetid://14012663380"
+      },
+      {
+        DisplayName: "Tripmine",
+        ToolName: "Tripmine",
+        Description: "Plant a tripmine that instantly kills anyone who crosses it!",
+        WinsRequired: 5,
+        Image: "rbxassetid://9289962773"
+      },
+      {
+        DisplayName: "Bow",
+        ToolName: "Bow",
+        Description: "An overall better version of the crossbow. Better damage, better range, better speed.",
+        WinsRequired: 25,
+        Image: "rbxassetid://391860091"
+      },
+      {
+        DisplayName: "Real Knife (ADMIN)",
+        ToolName: "Real Knife",
+        Description: "'cause if you take another step forward... you are REALLY not going to like what happens next.",
+        WinsRequired: 99999,
+        Image: "rbxassetid://5514664147"
+      }
+    ],
+    Secondary: [
+      {
+        DisplayName: "Locator",
+        ToolName: "Locator",
+        Description: "I mean, why prospect when you can detect? Shows you the highlight of a random player for 5 seconds. 30s Cooldown.",
+        WinsRequired: 0,
+        Image: "rbxassetid://84194925391921"
+      },
+      {
+        DisplayName: "Flashbang",
+        ToolName: "Flashbang",
+        Description: "One time use flashbang. Very powerful, lasts up to 5 seconds at close range!!",
+        WinsRequired: 0,
+        Image: "rbxassetid://10753198321"
+      },
+      {
+        DisplayName: "Molotov",
+        ToolName: "Molotov",
+        Description: "One time use molotov. Insane crowd potential! Lots of damage and hard to evacuate!",
+        WinsRequired: 0,
+        Image: "rbxassetid://65242755"
+      },
+      {
+        DisplayName: "Decoy",
+        ToolName: "Decoy",
+        Description: "Create a decoy of yourself to trick your foes!",
+        WinsRequired: 3,
+        Image: "rbxassetid://61115552"
+      },
+      {
+        DisplayName: "Trowel",
+        ToolName: "Trowel",
+        Description: "Create barriers to prevent your foes from attacking!",
+        WinsRequired: 5,
+        Image: "rbxassetid://17630649150"
+      },
+      {
+        DisplayName: "S. Oil",
+        ToolName: "Snake Oil",
+        Description: "This is basically bloxy cola but way better. It is very complicated though, so please refer to the wiki for information.",
+        WinsRequired: 5,
+        Image: "rbxassetid://17630649150"
+      },
+      {
+        DisplayName: "Slateskin",
+        ToolName: "Slateskin",
+        Description: "I AM IMPENETRABLE! Tankiness at the cost of speed.",
+        WinsRequired: 10,
+        Image: "rbxassetid://140070318347377"
+      },
+      {
+        DisplayName: "Bloxy Cola",
+        ToolName: "Bloxy Cola",
+        Description: "Take a sip of the cola to gain a 160% speed boost! You are slowed down 90% while drinking though, making you extremely vulnerable",
+        WinsRequired: 15,
+        Image: "rbxassetid://6740238869"
+      },
+      {
+        DisplayName: "G. Hook",
+        ToolName: "GrappleHook",
+        Description: "Full name Grappling Hook, lets you grapple. with a hook.",
+        WinsRequired: 30,
+        Image: "rbxassetid://83202981929006"
+      },
+      {
+        DisplayName: "Q. Locator",
+        ToolName: "Quantum Locator",
+        Description: "(BROKEN, TBR) I mean... detection? Full name of item is Quantum Locator. Will deal 50 damage with a lightning beam to the player as they are being highlighted, they are slowed down 25%. Targets closest player instead of random player. Strange sounds vibrate in the machine.",
+        WinsRequired: 50,
+        Image: "rbxassetid://7151778302"
+      },
+      {
+        DisplayName: "Heal (ADMIN)",
+        ToolName: "Heal",
+        Description: "Instantly rejuvenate someones health. To be paired with Real Knife",
+        WinsRequired: 99999,
+        Image: "rbxassetid://14895385109"
+      }
+    ]
+  };
 
-    <details class="dropdown">
-      <summary>3. Behavior</summary>
-      <ul>
-        <li><strong>3.1</strong> No harassment or slurs of any kind.</li>
-        <li><strong>3.2</strong> Respect others and avoid disruptive behavior.</li>
-        <li><strong>3.3</strong> Follow all staff instructions.</li>
-        <li><strong>3.4</strong> Report toxicity.</li>
-      </ul>
-    </details>
+  // Helper to get image url from Roblox assetid string
+  // Roblox images can be fetched from https://www.roblox.com/asset/?id=ASSETID (using numeric id)
+  // We'll parse out the numeric part from the rbxassetid string
+  function getRobloxImageUrl(rbxAssetId) {
+    const match = rbxAssetId.match(/rbxassetid:\/\/(\d+)/);
+    if (!match) return "";
+    return `https://www.roblox.com/asset/?id=${match[1]}`;
+  }
 
-    <details class="dropdown">
-      <summary>4. PAC3</summary>
-      <ul>
-        <li><strong>4.1</strong> No flashing/strobing or seizure-inducing effects.</li>
-        <li><strong>4.2</strong> No crash PACs or exploit usage.</li>
-        <li><strong>4.3</strong> NSFW PACs are not allowed.</li>
-        <li><strong>4.4</strong> Disruptive PACs are allowed.</li>
-      </ul>
-    </details>
+  // Function to generate items tab content
+  function generateItemsContent() {
+    const container = document.createElement("div");
+    container.className = "items-grid";
 
-    <details class="dropdown">
-      <summary>5. Wiremod</summary>
-      <ul>
-        <li><strong>5.1</strong> No flashing/strobing or seizure-inducing effects.</li>
-        <li><strong>5.2</strong> No disruptive contraptions.</li>
-        <li><strong>5.3</strong> Respect server performance with your contraptions. Nothing too crazy.</li>
-      </ul>
-    </details>
+    // Iterate Primary and Secondary items
+    ["Primary", "Secondary"].forEach(category => {
+      const categoryItems = WeaponConfig[category];
+      if (!categoryItems) return;
 
-    <details class="dropdown">
-      <summary>6. Miscellaneous</summary>
-      <ul>
-        <li><strong>6.1</strong> No staff disrespect.</li>
-        <li><strong>6.2</strong> No trolling or loopholes.</li>
-        <li><strong>6.3</strong> No spamming in chat.</li>
-        <li><strong>6.4</strong> Provide serious feedback.</li>
-      </ul>
-    </details>
-  </div>
+      // Category header
+      const header = document.createElement("h2");
+      header.textContent = category + " Weapons";
+      header.style.gridColumn = "1 / -1";
+      header.style.marginTop = "2rem";
+      container.appendChild(header);
 
-  <footer>
-    <p>© 2025 Quicksand — Built for creators, by creators.</p>
-  </footer>
+      categoryItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "item-card";
+
+        const img = document.createElement("div");
+        img.className = "item-image";
+        img.style.backgroundImage = `url('${getRobloxImageUrl(item.Image)}')`;
+        card.appendChild(img);
+
+        const name = document.createElement("div");
+        name.className = "item-name";
+        name.textContent = item.DisplayName;
+        card.appendChild(name);
+
+        const toolName = document.createElement("div");
+        toolName.className = "item-toolname";
+        toolName.textContent = `Tool Name: ${item.ToolName}`;
+        card.appendChild(toolName);
+
+        const desc = document.createElement("div");
+        desc.className = "item-desc";
+        desc.textContent = item.Description;
+        card.appendChild(desc);
+
+        const wins = document.createElement("div");
+        wins.className = "item-wins";
+        wins.textContent = `Wins Required: ${item.WinsRequired}`;
+        card.appendChild(wins);
+
+        container.appendChild(card);
+      });
+    });
+
+    return container;
+  }
+
+  // Templates for features and techs tabs
+  function generateTemplateContent(title) {
+    const div = document.createElement("div");
+    div.className = "template-placeholder";
+    div.textContent = `This is the placeholder for the ${title} tab. Please fill it out.`;
+    return div;
+  }
+
+  function switchTab(tab) {
+    // Update nav buttons active state
+    document.querySelectorAll("nav button").forEach(btn => {
+      btn.classList.toggle("active", btn.id === "tab-" + tab);
+    });
+
+    const content = document.getElementById("content");
+    content.innerHTML = "";
+
+    if (tab === "items") {
+      content.appendChild(generateItemsContent());
+    } else if (tab === "features") {
+      content.appendChild(generateTemplateContent("features"));
+    } else if (tab === "techs") {
+      content.appendChild(generateTemplateContent("techs"));
+    }
+  }
+
+  // Initialize page with items tab
+  switchTab("items");
+</script>
+
 </body>
 </html>
