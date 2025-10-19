@@ -631,6 +631,58 @@
   body.dark-mode .comment-text {
     color: #ccc;
   }
+  .preview-btn {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  .preview-btn:hover {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+    transform: translateY(-2px);
+  }
+  .preview-btn.playing {
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+    box-shadow: 0 6px 16px rgba(255, 111, 0, 0.4);
+  }
+  .preview-controls {
+    margin: 15px 0;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .preview-controls.active {
+    display: flex;
+  }
+  .preview-time {
+    font-size: 12px;
+    color: #666;
+    min-width: 60px;
+  }
+  body.dark-mode .preview-time {
+    color: #aaa;
+  }
+  .preview-progress {
+    flex: 1;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  body.dark-mode .preview-progress {
+    background: #444;
+  }
+  .preview-progress-fill {
+    height: 100%;
+    background: #2196F3;
+    border-radius: 3px;
+    width: 0%;
+  }
 </style>
 </head>
 <body>
@@ -709,6 +761,7 @@
 </div>
 
 <audio id="music" src="music.mp3" loop></audio>
+<audio id="previewAudio"></audio>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"
@@ -1016,18 +1069,15 @@ function openModal(entry, entryKey) {
   let isEditing = false
   const isOwner = entry.uuid === userUUID
   
-  // Clean up previous listener if any
   if (currentModalUnsubscribe) {
     currentModalUnsubscribe()
   }
   
-  // Set up real-time listener for this upload
   const uploadRef = ref(db, `uploads/${entryKey}`)
   currentModalUnsubscribe = onValue(uploadRef, (snapshot) => {
     const updatedEntry = snapshot.val()
     if (updatedEntry) {
       entry = updatedEntry
-      // Re-render if modal is still open and not editing
       if (!isEditing && modalOverlay.classList.contains("active")) {
         renderModal()
       }
@@ -1086,10 +1136,19 @@ function openModal(entry, entryKey) {
         </div>
         
         <button class="copy-btn" id="modalCopyBtn">Copy Link</button>
+        <button class="preview-btn" id="previewBtn">Preview Audio</button>
         ${isOwner ? '<button class="edit-btn" id="modalEditBtn">Edit</button>' : ''}
         ${isOwner ? '<button class="delete-btn" id="modalDeleteBtn">Delete</button>' : ''}
         ${isAdmin && !isOwner ? '<button class="edit-btn" id="modalAdminEditBtn">Admin Edit</button>' : ''}
         ${isAdmin && !isOwner ? '<button class="delete-btn" id="modalAdminDeleteBtn">Admin Delete</button>' : ''}
+        
+        <div class="preview-controls" id="previewControls">
+          <button class="vote-btn downvote-btn" id="stopPreviewBtn" style="padding: 8px 16px;">Stop</button>
+          <div class="preview-time"><span id="previewTime">0:00</span> / <span id="previewDuration">0:00</span></div>
+          <div class="preview-progress" id="previewProgress">
+            <div class="preview-progress-fill" id="previewProgressFill"></div>
+          </div>
+        </div>
         
         <div class="comments-section">
           <h3 style="margin-top: 0;">Comments (${commentList.length})</h3>
@@ -1113,6 +1172,74 @@ function openModal(entry, entryKey) {
           this.classList.remove("copied")
           this.textContent = "Copy Link"
         }, 1000)
+      }
+      
+      const previewAudio = document.getElementById("previewAudio")
+      const previewBtn = document.getElementById("previewBtn")
+      const stopPreviewBtn = document.getElementById("stopPreviewBtn")
+      const previewControls = document.getElementById("previewControls")
+      const previewProgressBar = document.getElementById("previewProgress")
+      const previewProgressFill = document.getElementById("previewProgressFill")
+      const previewTimeSpan = document.getElementById("previewTime")
+      const previewDurationSpan = document.getElementById("previewDuration")
+      
+      function formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return "0:00"
+        const mins = Math.floor(seconds / 60)
+        const secs = Math.floor(seconds % 60)
+        return `${mins}:${secs.toString().padStart(2, '0')}`
+      }
+      
+      previewBtn.onclick = () => {
+        if (previewAudio.src === entry.link && !previewAudio.paused) {
+          previewAudio.pause()
+          previewBtn.classList.remove("playing")
+          previewBtn.textContent = "Preview Audio"
+          music.play()
+        } else {
+          previewAudio.src = entry.link
+          previewAudio.play()
+          previewBtn.classList.add("playing")
+          previewBtn.textContent = "Pause Preview"
+          previewControls.classList.add("active")
+          music.pause()
+        }
+      }
+      
+      stopPreviewBtn.onclick = () => {
+        previewAudio.pause()
+        previewAudio.currentTime = 0
+        previewControls.classList.remove("active")
+        previewBtn.classList.remove("playing")
+        previewBtn.textContent = "🎵 Preview Audio"
+        music.play()
+      }
+      
+      previewAudio.ontimeupdate = () => {
+        const percent = (previewAudio.currentTime / previewAudio.duration) * 100
+        previewProgressFill.style.width = percent + "%"
+        previewTimeSpan.textContent = formatTime(previewAudio.currentTime)
+      }
+      
+      previewAudio.onloadedmetadata = () => {
+        previewDurationSpan.textContent = formatTime(previewAudio.duration)
+      }
+      
+      previewAudio.onended = () => {
+        previewControls.classList.remove("active")
+        previewBtn.classList.remove("playing")
+        previewBtn.textContent = "🎵 Preview Audio"
+        previewAudio.currentTime = 0
+        previewProgressFill.style.width = "0%"
+        music.play()
+      }
+      
+      previewProgressBar.onclick = (e) => {
+        if (previewAudio.duration) {
+          const rect = previewProgressBar.getBoundingClientRect()
+          const percent = (e.clientX - rect.left) / rect.width
+          previewAudio.currentTime = percent * previewAudio.duration
+        }
       }
       
       document.getElementById("upvoteBtn").onclick = () => {
@@ -1156,7 +1283,6 @@ function openModal(entry, entryKey) {
         document.getElementById("commentInput").value = ""
       }
       
-      // Comment delete buttons
       document.querySelectorAll(".comment-delete-btn").forEach(btn => {
         btn.onclick = () => {
           const commentId = btn.getAttribute("data-comment-id")
@@ -1166,7 +1292,6 @@ function openModal(entry, entryKey) {
         }
       })
       
-      // Comment like buttons
       document.querySelectorAll(".comment-like-btn").forEach(btn => {
         btn.onclick = () => {
           const commentId = btn.getAttribute("data-comment-id")
@@ -1183,7 +1308,6 @@ function openModal(entry, entryKey) {
         }
       })
       
-      // Comment dislike buttons
       document.querySelectorAll(".comment-dislike-btn").forEach(btn => {
         btn.onclick = () => {
           const commentId = btn.getAttribute("data-comment-id")
@@ -1307,11 +1431,18 @@ function openModal(entry, entryKey) {
 }
 
 function closeModal() {
-  // Clean up the real-time listener when closing modal
   if (currentModalUnsubscribe) {
     currentModalUnsubscribe()
     currentModalUnsubscribe = null
   }
+  
+  const previewAudio = document.getElementById("previewAudio")
+  if (previewAudio && !previewAudio.paused) {
+    previewAudio.pause()
+    previewAudio.currentTime = 0
+    music.play()
+  }
+  
   modalOverlay.classList.remove("active")
 }
 
