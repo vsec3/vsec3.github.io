@@ -510,6 +510,32 @@
       transform: translateY(0);
     }
   }
+  #filterContainer {
+    margin: 20px auto;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  #filterContainer label {
+    color: #333;
+  }
+  body.dark-mode #filterContainer label {
+    color: #e0e0e0;
+  }
+  #filterSelect {
+    min-width: 180px;
+  }
+  .upload-date {
+    color: #999;
+    font-size: 12px;
+    margin: 5px 0;
+  }
+  body.dark-mode .upload-date {
+    color: #888;
+  }
 </style>
 </head>
 <body>
@@ -543,6 +569,21 @@
     <div id="selectedTags"></div>
   </div>
   <button id="uploadBtn">Upload</button>
+</div>
+
+<div style="display:none;" id="filterContainer">
+  <label for="filterSelect" style="font-weight: 600; margin-right: 10px; color: #333;">Filter:</label>
+  <select id="filterSelect">
+    <option value="newest">Date (Newest)</option>
+    <option value="oldest">Date (Oldest)</option>
+    <option value="username-az">Username (A-Z)</option>
+    <option value="username-za">Username (Z-A)</option>
+    <option value="tag-lms">LMS Theme</option>
+    <option value="tag-ambience">Ambience Theme</option>
+    <option value="tag-shop">Shop Theme</option>
+    <option value="tag-chase">Chase Theme</option>
+    <option value="tag-lobby">Lobby Theme</option>
+  </select>
 </div>
 
 <div id="uploads" style="display:none;"></div>
@@ -740,7 +781,8 @@ uploadBtn.onclick = () => {
     link: formattedLink, 
     shortDesc: short, 
     fullDesc: full,
-    tags: selectedTags 
+    tags: selectedTags,
+    timestamp: Date.now()
   })
   catboxLink.value = ""
   catboxName.value = ""
@@ -756,20 +798,73 @@ function formatCatboxLink(l) {
   return "https://" + l
 }
 
+let allUploads = {}
+
 onValue(uploadsRef, (snapshot) => {
   const user = getCookie("username")
   if (!user) return
   uploadsDiv.style.display = "block"
-  uploadsDiv.innerHTML = ""
   const data = snapshot.val()
-  if (!data) return
-  Object.entries(data).forEach(([key, entry]) => {
+  if (!data) {
+    uploadsDiv.innerHTML = ""
+    return
+  }
+  
+  allUploads = data
+  document.getElementById("filterContainer").style.display = "flex"
+  applyFilter()
+})
+
+function formatUploadDate(timestamp) {
+  if (!timestamp) {
+    timestamp = new Date(2025, 9, 18, 20, 50, 0).getTime()
+  }
+  const date = new Date(timestamp)
+  const timeStr = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+  const dateStr = date.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
+  return `Uploaded at ${timeStr} on ${dateStr}`
+}
+
+function applyFilter() {
+  const filterValue = document.getElementById("filterSelect").value
+  let entries = Object.entries(allUploads)
+  
+  if (filterValue.startsWith("tag-")) {
+    const tagName = {
+      "tag-lms": "LMS Music",
+      "tag-ambience": "Ambience Music",
+      "tag-shop": "Shop Music",
+      "tag-chase": "Chase Music",
+      "tag-lobby": "Lobby Music"
+    }[filterValue]
+    
+    entries = entries.filter(([key, entry]) => {
+      return entry.tags && entry.tags.includes(tagName)
+    })
+  }
+  
+  if (filterValue === "newest") {
+    entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0))
+  } else if (filterValue === "oldest") {
+    entries.sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0))
+  } else if (filterValue === "username-az") {
+    entries.sort((a, b) => a[1].username.localeCompare(b[1].username))
+  } else if (filterValue === "username-za") {
+    entries.sort((a, b) => b[1].username.localeCompare(a[1].username))
+  }
+  
+  uploadsDiv.innerHTML = ""
+  entries.forEach(([key, entry]) => {
     const div = document.createElement("div")
     div.className = "upload-item"
     
     const userEl = document.createElement("p")
     userEl.className = "by-text"
     userEl.textContent = "By: " + entry.username
+    
+    const dateEl = document.createElement("p")
+    dateEl.className = "upload-date"
+    dateEl.textContent = formatUploadDate(entry.timestamp)
     
     const shortEl = document.createElement("p")
     shortEl.className = "short-desc"
@@ -781,11 +876,14 @@ onValue(uploadsRef, (snapshot) => {
     btn.onclick = () => openModal(entry, key)
     
     div.appendChild(userEl)
+    div.appendChild(dateEl)
     div.appendChild(shortEl)
     div.appendChild(btn)
     uploadsDiv.appendChild(div)
   })
-})
+}
+
+document.getElementById("filterSelect").onchange = applyFilter
 
 function openModal(entry, entryKey) {
   let isEditing = false
@@ -795,6 +893,7 @@ function openModal(entry, entryKey) {
       modalBox.innerHTML = `
         <h2>${entry.name}</h2>
         <p class="by-text">By: ${entry.username}</p>
+        <p class="upload-date">${formatUploadDate(entry.timestamp)}</p>
         <p class="short-desc">${entry.shortDesc || ''}</p>
         <div class="tags">
           ${(entry.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
