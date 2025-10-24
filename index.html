@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta property="og:title" content="nyxus' porfolio">
+    <meta property="og:description" content="Making Silly Games since 2017.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/vsec3/vsec3/refs/heads/main/nyxus.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nyxus' Portfolio</title>
@@ -25,14 +28,32 @@
             left: 0;
             width: 100%;
             height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .grid-background::before,
+        .grid-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 50px 50px;
             background-repeat: repeat;
-            pointer-events: none;
-            z-index: 1;
+        }
+
+        .grid-background::before {
             animation: moveGrid 4s linear infinite;
+        }
+
+        .grid-background::after {
+            animation: moveGridReverse 4s linear infinite;
+            opacity: 0.5;
         }
 
         @keyframes moveGrid {
@@ -41,6 +62,15 @@
             }
             100% {
                 background-position: 50px 50px;
+            }
+        }
+
+        @keyframes moveGridReverse {
+            0% {
+                background-position: 50px 50px;
+            }
+            100% {
+                background-position: 0 0;
             }
         }
 
@@ -228,6 +258,92 @@
             opacity: 1;
         }
 
+        .features-section {
+            margin: 4rem 0 3rem;
+            width: 100%;
+        }
+
+        .features-title {
+            font-size: 0.9rem;
+            margin-bottom: 2.5rem;
+            color: #888;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: #141414;
+            border: 1px solid #222;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            border-color: #444;
+            transform: translateY(-5px);
+        }
+
+        .feature-icon-container {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .feature-icon-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        .feature-info {
+            padding: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .feature-description {
+            color: #888;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -385,6 +501,7 @@
             .subtitle { font-size: 1.2rem; }
             .nav-content { gap: 1rem; }
             .projects-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
             .cta-buttons { flex-direction: column; width: 100%; }
             .btn { width: 100%; }
         }
@@ -478,9 +595,58 @@
                 </div>
             </div>
 
-            <div class="cta-buttons">
-                <button class="btn btn-primary" onclick="showSection('contact')">Contact Me</button>
-                <button class="btn btn-secondary" onclick="showSection('projects')">View Projects</button>
+            <div class="features-section">
+                <h2 class="features-title">Why Choose Me?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-container">
+                            <div class="feature-icon-bg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="feature-info">
+                            <h3 class="feature-title">Scalable and Modular</h3>
+                            <p class="feature-description">My scripts are scalable and modular, so you will not have issues with editing them!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-container">
+                            <div class="feature-icon-bg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="feature-info">
+                            <h3 class="feature-title">Any Scripts</h3>
+                            <p class="feature-description">I can script with any type of script, localscript, serverscript, or modulescript!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-container">
+                            <div class="feature-icon-bg" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="feature-info">
+                            <h3 class="feature-title">High Performance</h3>
+                            <p class="feature-description">My scripts do not contain memory leaks or unnecessary loops that will cause your game to lag.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -492,7 +658,7 @@
             
             <div class="projects-grid">
                 <div class="project-card">
-                    <div class="project-image" style="background-image: url('https://files.catbox.moe/k20k76.png');"></div> 
+                    <div class="project-image" style="background-image: url('https://raw.githubusercontent.com/vsec3/vsec3/refs/heads/main/retromizer.png');"></div> 
                     <div class="project-info">
                         <h3 class="project-title">Retromizer</h3>
                         <p class="project-description">Just a slap battles clone pretty much. Helped me learn modulescripts and serverstorage.</p>
@@ -501,7 +667,7 @@
                 </div>
                 
                 <div class="project-card">
-                    <div class="project-image" style="background-image: url('https://files.catbox.moe/2yr9tp.png');"></div>
+                    <div class="project-image" style="background-image: url('https://raw.githubusercontent.com/vsec3/vsec3/refs/heads/main/lastman.png');"></div>
                     <div class="project-info">
                         <h3 class="project-title">LASTMAN</h3>
                         <p class="project-description">A round-based FFA fighting game. One of my favorites, helped me learn remotes, GUI, and localscripts.</p>
@@ -510,7 +676,7 @@
                 </div>
                 
                 <div class="project-card">
-                    <div class="project-image" style="background-image: url('https://files.catbox.moe/ip60z5.png');"></div>
+                    <div class="project-image" style="background-image: url('https://raw.githubusercontent.com/vsec3/vsec3/refs/heads/main/snowvalley.png');"></div>
                     <div class="project-info">
                         <h3 class="project-title">Snow Valley</h3>
                         <p class="project-description">I really liked the game "winter" if you couldnt tell. Discontinued due to unknown and unfixable lag issues.</p>
