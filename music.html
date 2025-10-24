@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Catbox Uploads</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: #fafafa;
+    color: #222;
+    text-align: center;
+    padding: 20px;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  body.dark-mode {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+  .theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4a90e2;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .theme-toggle:hover {
+    transform: scale(1.1);
+  }
+  body.dark-mode .theme-toggle {
+    background: #ffa726;
+  }
+  input, button, select { margin: 5px; padding: 8px; font-size: 16px; }
+  select {
+    background: #f5f5f5;
+    border: 2px solid #4a90e2;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #333;
+  }
+  select:hover {
+    border-color: #357abd;
+    box-shadow: 0 2px 6px rgba(74, 144, 226, 0.2);
+  }
+  select:focus {
+    outline: none;
+    border-color: #357abd;
+    box-shadow: 0 0 8px rgba(74, 144, 226, 0.4);
+  }
+  body.dark-mode select {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #ffa726;
+  }
+  body.dark-mode input,
+  body.dark-mode select,
+  body.dark-mode textarea {
+    background: #2a2a2a;
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+  textarea { margin: 5px; padding: 8px; font-size: 14px; font-family: sans-serif; width: 400px; height: 100px; }
+  #uploads { 
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  @media (max-width: 900px) {
+    #uploads { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    #uploads { grid-template-columns: 1fr; }
+  }
+  .upload-item { 
+    border: 1px solid #ccc; 
+    margin: 0; 
+    padding: 20px; 
+    width: 100%;
+    border-radius: 8px; 
+    background: white; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+  }
+  body.dark-mode .upload-item {
+    background: #2a2a2a;
+    border-color: #444;
+  }
+  .upload-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  .upload-item p { margin: 8px 0; text-align: center; }
+  .upload-item .by-text { color: #666; font-size: 13px; }
+  body.dark-mode .upload-item .by-text { color: #999; }
+  .upload-item .short-desc { font-weight: 400; margin: 10px 0; font-size: 15px; }
+  .open-btn { 
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    color: white; 
+    border: none; 
+    padding: 10px 28px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    font-weight: 600;
+    margin-top: 10px;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+  }
+  .open-btn:hover { 
+    background: linear-gradient(135deg, #357abd 0%, #2a5291 100%);
+    box-shadow: 0 6px 16px rgba(74, 144, 226, 0.4);
+    transform: translateY(-2px);
+  }
+  .open-btn:active {
+    transform: translateY(0px);
+  }
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 500px;
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    animation: modalSlide 0.3s ease;
+  }
+  body.dark-mode .modal-box {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+  @keyframes modalSlide {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .modal-box h2 { margin-top: 0; color: #333; }
+  body.dark-mode .modal-box h2 { color: #e0e0e0; }
+  .modal-box .by-text { color: #666; margin: 5px 0; }
+  .modal-box .short-desc { font-weight: 500; margin: 15px 0; font-size: 16px; }
+  .modal-box .tags { margin: 15px 0; }
+  .tag { 
+    display: inline-block; 
+    background: #e3f2fd; 
+    color: #1976d2; 
+    padding: 5px 12px; 
+    border-radius: 15px; 
+    margin: 3px; 
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .modal-box .full-desc { 
+    margin: 20px 0; 
+    color: #555; 
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  body.dark-mode .modal-box .full-desc {
+    color: #ccc;
+  }
+  .copy-btn { 
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    color: white; 
+    border: none; 
+    padding: 11px 24px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: all 0.3s ease;
+    font-weight: 600;
+    margin-right: 10px;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+  }
+  .copy-btn:hover { 
+    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+    box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+    transform: translateY(-2px);
+  }
+  .copy-btn.copied { 
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    transform: scale(1.05);
+  }
+  .close-btn {
+    background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+    color: #333;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+  }
+  .close-btn:hover { 
+    background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  body.dark-mode .close-btn {
+    background: linear-gradient(135deg, #424242 0%, #303030 100%);
+    color: #e0e0e0;
+  }
+  body.dark-mode .close-btn:hover {
+    background: linear-gradient(135deg, #303030 0%, #212121 100%);
+  }
+  .tags-input-container { margin: 10px 0; }
+  .selected-tag {
+    display: inline-block;
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 5px 10px;
+    border-radius: 15px;
+    margin: 3px;
+    font-size: 13px;
+  }
+  .delete-btn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    margin-right: 10px;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+  }
+  .delete-btn:hover { 
+    background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+    box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+    transform: translateY(-2px);
+  }
+  .edit-btn {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    margin-right: 10px;
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+  }
+  .edit-btn:hover { 
+    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+    box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+    transform: translateY(-2px);
+  }
+  .modal-box input[type="text"],
+  .modal-box textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  body.dark-mode .modal-box input[type="text"],
+  body.dark-mode .modal-box textarea {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+  .modal-box label {
+    display: block;
+    text-align: left;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+  .announcer-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+    z-index: 998;
+  }
+  .announcer-btn:hover {
+    background: linear-gradient(135deg, #7b1fa2 0%, #6a0dad 100%);
+    box-shadow: 0 8px 24px rgba(156, 39, 176, 0.5);
+    transform: translateY(-3px);
+  }
+  .announcer-panel {
+    display: none;
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 25px;
+    width: 350px;
+    max-width: 90%;
+    z-index: 998;
+    animation: slideUp 0.3s ease;
+  }
+  body.dark-mode .announcer-panel {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+  @keyframes slideUp {
+    from { 
+      transform: translateY(20px) translateX(50px);
+      opacity: 0;
+    }
+    to { 
+      transform: translateY(0) translateX(0);
+      opacity: 1;
+    }
+  }
+  .announcer-panel.active {
+    display: block;
+  }
+  .announcer-panel h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #9c27b0;
+    font-size: 18px;
+  }
+  body.dark-mode .announcer-panel h3 {
+    color: #b39ddb;
+  }
+  .announcer-panel label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+  }
+  body.dark-mode .announcer-panel label {
+    color: #e0e0e0;
+  }
+  .announcer-panel input[type="text"],
+  .announcer-panel textarea,
+  .announcer-panel input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    font-family: inherit;
+  }
+  .announcer-panel input[type="text"]:focus,
+  .announcer-panel textarea:focus,
+  .announcer-panel input[type="number"]:focus {
+    outline: none;
+    border-color: #9c27b0;
+    box-shadow: 0 0 8px rgba(156, 39, 176, 0.2);
+  }
+  body.dark-mode .announcer-panel input[type="text"],
+  body.dark-mode .announcer-panel textarea,
+  body.dark-mode .announcer-panel input[type="number"] {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+  body.dark-mode .announcer-panel input[type="text"]:focus,
+  body.dark-mode .announcer-panel textarea:focus,
+  body.dark-mode .announcer-panel input[type="number"]:focus {
+    border-color: #b39ddb;
+  }
+  .announcer-panel textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  .announcer-panel button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 13px;
+  }
+  .announce-btn {
+    background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+  }
+  .announce-btn:hover {
+    background: linear-gradient(135deg, #7b1fa2 0%, #6a0dad 100%);
+    box-shadow: 0 6px 16px rgba(156, 39, 176, 0.4);
+    transform: translateY(-2px);
+  }
+  .stop-announce-btn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+  }
+  .stop-announce-btn:hover {
+    background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
+    box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+    transform: translateY(-2px);
+  }
+  .close-panel-btn {
+    background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  .close-panel-btn:hover {
+    background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+  body.dark-mode .close-panel-btn {
+    background: linear-gradient(135deg, #424242 0%, #303030 100%);
+    color: #e0e0e0;
+  }
+  body.dark-mode .close-panel-btn:hover {
+    background: linear-gradient(135deg, #303030 0%, #212121 100%);
+  }
+  #announceDisplay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #000000;
+    color: #ff0000;
+    padding: 8px 15px;
+    font-weight: 600;
+    font-size: 12px;
+    text-align: center;
+    z-index: 1001;
+    display: none;
+    word-wrap: break-word;
+    letter-spacing: 0.5px;
+    height: auto;
+    line-height: 1.4;
+    max-height: 60px;
+    overflow: hidden;
+  }
+  #announceDisplay.active {
+    display: block;
+    animation: announceAnim 0.3s ease;
+  }
+  @keyframes announceAnim {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  #filterContainer {
+    margin: 20px auto;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  #filterContainer label {
+    color: #333;
+  }
+  body.dark-mode #filterContainer label {
+    color: #e0e0e0;
+  }
+  #filterSelect {
+    min-width: 180px;
+  }
+  .upload-date {
+    color: #999;
+    font-size: 12px;
+    margin: 5px 0;
+  }
+  body.dark-mode .upload-date {
+    color: #888;
+  }
+  .upvote-display {
+    font-weight: 700;
+    color: #4caf50;
+    margin: 5px 0;
+    font-size: 16px;
+  }
+  .upvote-display.negative {
+    color: #f44336;
+  }
+  .upvote-buttons {
+    display: flex;
+    gap: 10px;
+    margin: 10px 0;
+    justify-content: center;
+  }
+  .vote-btn {
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  .downvote-btn {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  }
+  .vote-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  .vote-btn.voted {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .comments-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+  }
+  body.dark-mode .comments-section {
+    border-top-color: #444;
+  }
+  .comment-input-group {
+    margin-bottom: 15px;
+  }
+  .comment-input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: sans-serif;
+    resize: vertical;
+    min-height: 80px;
+  }
+  body.dark-mode .comment-input-group textarea {
+    background: #3a3a3a;
+    color: #e0e0e0;
+    border-color: #555;
+  }
+  .comment {
+    background: #f5f5f5;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  body.dark-mode .comment {
+    background: #3a3a3a;
+    color: #e0e0e0;
+  }
+  .comment-username {
+    font-weight: 600;
+    color: #1976d2;
+  }
+  body.dark-mode .comment-username {
+    color: #b39ddb;
+  }
+  .comment-time {
+    color: #999;
+    font-size: 12px;
+    margin-left: 10px;
+  }
+  body.dark-mode .comment-time {
+    color: #888;
+  }
+  .comment-text {
+    margin-top: 5px;
+    color: #333;
+  }
+  body.dark-mode .comment-text {
+    color: #ccc;
+  }
+  .preview-btn {
+    background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  .preview-btn:hover {
+    background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+    box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+    transform: translateY(-2px);
+  }
+  .preview-btn.playing {
+    background: linear-gradient(135deg, #FF6F00 0%, #E65100 100%);
+    box-shadow: 0 6px 16px rgba(255, 111, 0, 0.4);
+  }
+  .preview-controls {
+    margin: 15px 0;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+  .preview-controls.active {
+    display: flex;
+  }
+  .preview-time {
+    font-size: 12px;
+    color: #666;
+    min-width: 60px;
+  }
+  body.dark-mode .preview-time {
+    color: #aaa;
+  }
+  .preview-progress {
+    flex: 1;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  body.dark-mode .preview-progress {
+    background: #444;
+  }
+  .preview-progress-fill {
+    height: 100%;
+    background: #2196F3;
+    border-radius: 3px;
+    width: 0%;
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle">☀️</button>
+
+<h1>Catbox Uploads</h1>
+
+<div id="usernamePrompt" style="display:none;">
+  <p>Enter your username:</p>
+  <input type="text" id="usernameInput" placeholder="Your name">
+  <button id="setUsername">Enter</button>
+</div>
+
+<div id="uploadForm" style="display:none;">
+  <p>Welcome, <span id="usernameDisplay"></span>!</p>
+  <input type="text" id="catboxLink" placeholder="Catbox link (e.g. https://files.catbox.moe/xxxx.mp3)" size="40"><br>
+  <input type="text" id="catboxName" placeholder="Name (e.g. Soup Theme)" size="40"><br>
+  <input type="text" id="shortDesc" placeholder="Short description" size="40"><br>
+  <textarea id="fullDesc" placeholder="Full description (optional)"></textarea><br>
+  <div class="tags-input-container">
+    <select id="tagSelect">
+      <option value="">Select tag...</option>
+      <option value="Lobby Music">Lobby Music</option>
+      <option value="LMS Music">LMS Music</option>
+      <option value="Chase Music">Chase Music</option>
+      <option value="Ambience Music">Ambience Music</option>
+      <option value="Shop Music">Shop Music</option>
+    </select>
+    <button id="addTagBtn">Add Tag</button>
+    <div id="selectedTags"></div>
+  </div>
+  <button id="uploadBtn">Upload</button>
+</div>
+
+<div style="display:none;" id="filterContainer">
+  <label for="filterSelect" style="font-weight: 600; margin-right: 10px; color: #333;">Filter:</label>
+  <select id="filterSelect">
+    <option value="newest">Date (Newest)</option>
+    <option value="oldest">Date (Oldest)</option>
+    <option value="username-az">Username (A-Z)</option>
+    <option value="username-za">Username (Z-A)</option>
+    <option value="upvotes-most">Most Upvoted</option>
+    <option value="downvotes-most">Most Downvoted</option>
+    <option value="comments-most">Most Comments</option>
+    <option value="tag-lms">LMS Theme</option>
+    <option value="tag-ambience">Ambience Theme</option>
+    <option value="tag-shop">Shop Theme</option>
+    <option value="tag-chase">Chase Theme</option>
+    <option value="tag-lobby">Lobby Theme</option>
+  </select>
+</div>
+
+<div id="uploads" style="display:none;"></div>
+
+<div id="announceDisplay"></div>
+
+<button class="announcer-btn" id="announcerBtn">📢 Announcer</button>
+
+<div class="announcer-panel" id="announcerPanel">
+  <h3>📢 Announcer Panel</h3>
+  <label for="announcementText">Announcement:</label>
+  <textarea id="announcementText" placeholder="Enter your announcement..."></textarea>
+  
+  <label for="announcementDuration">Duration (minutes):</label>
+  <input type="number" id="announcementDuration" placeholder="5" min="1" max="120" value="5">
+  
+  <button class="announce-btn" id="announceSubmitBtn">Announce</button>
+  <button class="stop-announce-btn" id="stopAnnounceBtn" style="display:none;">Stop Announcement</button>
+  <button class="close-panel-btn" id="closePanelBtn">Close</button>
+</div>
+
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal-box" id="modalBox">
+  </div>
+</div>
+
+<audio id="music" src="music.mp3" loop></audio>
+<audio id="previewAudio"></audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"
+import { getDatabase, ref, push, onValue, remove, update, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js"
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBGZbDqbAG5DmxEkB9lcXY7BKs6obCGzW4",
+  authDomain: "jbaydark.firebaseapp.com",
+  databaseURL: "https://jbaydark-default-rtdb.firebaseio.com",
+  projectId: "jbaydark",
+  storageBucket: "jbaydark.firebasestorage.app",
+  messagingSenderId: "209421709957",
+  appId: "1:209421709957:web:cb4163e91bfcaf2011efec",
+  measurementId: "G-G6DXEG4NJ7"
+}
+
+const app = initializeApp(firebaseConfig)
+const db = getDatabase(app)
+const uploadsRef = ref(db, "uploads")
+const announcementRef = ref(db, "currentAnnouncement")
+
+const usernamePrompt = document.getElementById("usernamePrompt")
+const uploadForm = document.getElementById("uploadForm")
+const usernameInput = document.getElementById("usernameInput")
+const setUsernameBtn = document.getElementById("setUsername")
+const usernameDisplay = document.getElementById("usernameDisplay")
+const catboxLink = document.getElementById("catboxLink")
+const catboxName = document.getElementById("catboxName")
+const shortDesc = document.getElementById("shortDesc")
+const fullDesc = document.getElementById("fullDesc")
+const tagSelect = document.getElementById("tagSelect")
+const addTagBtn = document.getElementById("addTagBtn")
+const selectedTagsDiv = document.getElementById("selectedTags")
+const uploadBtn = document.getElementById("uploadBtn")
+const uploadsDiv = document.getElementById("uploads")
+const modalOverlay = document.getElementById("modalOverlay")
+const modalBox = document.getElementById("modalBox")
+const music = document.getElementById("music")
+const themeToggle = document.getElementById("themeToggle")
+
+let selectedTags = []
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"))
+  return match ? match[2] : null
+}
+function setCookie(name, value, days) {
+  const d = new Date()
+  d.setTime(d.getTime() + (days*24*60*60*1000))
+  document.cookie = `${name}=${value};expires=${d.toUTCString()};path=/`
+}
+
+function generateUUID() {
+  let uuid = ""
+  for (let i = 0; i < 100; i++) {
+    uuid += Math.floor(Math.random() * 10)
+  }
+  return uuid
+}
+
+function getOrCreateUUID() {
+  let uuid = getCookie("uuid")
+  if (!uuid) {
+    uuid = generateUUID()
+    setCookie("uuid", uuid, 365)
+  }
+  return uuid
+}
+
+const ADMIN_UUID = "1619501444701768995331781547431905867797569067736535183339989499971954097571326816977302613282327092"
+const userUUID = getOrCreateUUID()
+const isAdmin = userUUID === ADMIN_UUID
+
+const darkMode = getCookie("darkMode") === "true"
+if (darkMode) {
+  document.body.classList.add("dark-mode")
+  themeToggle.textContent = "🌙"
+}
+
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark-mode")
+  const isDark = document.body.classList.contains("dark-mode")
+  themeToggle.textContent = isDark ? "🌙" : "☀️"
+  setCookie("darkMode", isDark, 365)
+}
+
+async function fadeInMusic(targetVolume = 1, duration = 2000) {
+  music.volume = 0
+  const step = 50
+  const increment = (targetVolume / (duration / step))
+  const interval = setInterval(() => {
+    if (music.volume < targetVolume) {
+      music.volume = Math.min(music.volume + increment, targetVolume)
+    } else {
+      clearInterval(interval)
+    }
+  }, step)
+  try { await music.play() } catch {}
+}
+
+let username = getCookie("username")
+if (!username) {
+  usernamePrompt.style.display = "block"
+} else {
+  showUploadForm(username)
+  uploadsDiv.style.display = "block"
+  const startOnInteraction = () => {
+    fadeInMusic()
+    document.removeEventListener("click", startOnInteraction)
+    document.removeEventListener("keydown", startOnInteraction)
+  }
+  document.addEventListener("click", startOnInteraction)
+  document.addEventListener("keydown", startOnInteraction)
+}
+
+setUsernameBtn.onclick = async () => {
+  const val = usernameInput.value.trim()
+  if (val) {
+    setCookie("username", val, 365)
+    username = val
+    showUploadForm(val)
+    uploadsDiv.style.display = "block"
+    await fadeInMusic()
+  }
+}
+
+function showUploadForm(name) {
+  usernamePrompt.style.display = "none"
+  uploadForm.style.display = "block"
+  usernameDisplay.textContent = name
+}
+
+addTagBtn.onclick = () => {
+  const tag = tagSelect.value
+  if (tag && !selectedTags.includes(tag)) {
+    selectedTags.push(tag)
+    updateTagsDisplay()
+  }
+  tagSelect.value = ""
+}
+
+function updateTagsDisplay() {
+  selectedTagsDiv.innerHTML = ""
+  selectedTags.forEach(tag => {
+    const span = document.createElement("span")
+    span.className = "selected-tag"
+    span.textContent = tag + " ×"
+    span.style.cursor = "pointer"
+    span.onclick = () => {
+      selectedTags = selectedTags.filter(t => t !== tag)
+      updateTagsDisplay()
+    }
+    selectedTagsDiv.appendChild(span)
+  })
+}
+
+uploadBtn.onclick = () => {
+  const link = catboxLink.value.trim()
+  const name = catboxName.value.trim()
+  const short = shortDesc.value.trim()
+  const full = fullDesc.value.trim()
+  const user = getCookie("username")
+  if (!link || !name || !short) return alert("Please fill link, name, and short description!")
+  const formattedLink = formatCatboxLink(link)
+  push(uploadsRef, { 
+    username: user, 
+    uuid: userUUID,
+    name: name, 
+    link: formattedLink, 
+    shortDesc: short, 
+    fullDesc: full,
+    tags: selectedTags,
+    timestamp: Date.now(),
+    upvotes: {},
+    downvotes: {},
+    comments: {}
+  })
+  catboxLink.value = ""
+  catboxName.value = ""
+  shortDesc.value = ""
+  fullDesc.value = ""
+  selectedTags = []
+  updateTagsDisplay()
+}
+
+function formatCatboxLink(l) {
+  l = l.replace(/^https?:\/\//, "")
+  if (!l.startsWith("files.catbox.moe")) l = "files.catbox.moe/" + l
+  return "https://" + l
+}
+
+let allUploads = {}
+
+onValue(uploadsRef, (snapshot) => {
+  const user = getCookie("username")
+  if (!user) return
+  uploadsDiv.style.display = "block"
+  const data = snapshot.val()
+  if (!data) {
+    uploadsDiv.innerHTML = ""
+    return
+  }
+  
+  allUploads = data
+  document.getElementById("filterContainer").style.display = "flex"
+  applyFilter()
+})
+
+function formatUploadDate(timestamp) {
+  if (!timestamp) {
+    timestamp = new Date(2025, 9, 18, 20, 50, 0).getTime()
+  }
+  const date = new Date(timestamp)
+  const timeStr = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+  const dateStr = date.toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })
+  return `Uploaded at ${timeStr} on ${dateStr}`
+}
+
+function getVoteScore(entry) {
+  const upvotes = Object.keys(entry.upvotes || {}).length
+  const downvotes = Object.keys(entry.downvotes || {}).length
+  return upvotes - downvotes
+}
+
+function formatVoteDisplay(score) {
+  return score >= 0 ? `+${score}` : `${score}`
+}
+
+function applyFilter() {
+  const filterValue = document.getElementById("filterSelect").value
+  let entries = Object.entries(allUploads)
+  
+  if (filterValue.startsWith("tag-")) {
+    const tagName = {
+      "tag-lms": "LMS Music",
+      "tag-ambience": "Ambience Music",
+      "tag-shop": "Shop Music",
+      "tag-chase": "Chase Music",
+      "tag-lobby": "Lobby Music"
+    }[filterValue]
+    
+    entries = entries.filter(([key, entry]) => {
+      return entry.tags && entry.tags.includes(tagName)
+    })
+  }
+  
+  if (filterValue === "newest") {
+    entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0))
+  } else if (filterValue === "oldest") {
+    entries.sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0))
+  } else if (filterValue === "username-az") {
+    entries.sort((a, b) => a[1].username.localeCompare(b[1].username))
+  } else if (filterValue === "username-za") {
+    entries.sort((a, b) => b[1].username.localeCompare(a[1].username))
+  } else if (filterValue === "upvotes-most") {
+    entries.sort((a, b) => getVoteScore(b[1]) - getVoteScore(a[1]))
+  } else if (filterValue === "downvotes-most") {
+    const downvoteCount = (entry) => Object.keys(entry.downvotes || {}).length
+    entries.sort((a, b) => downvoteCount(b[1]) - downvoteCount(a[1]))
+  } else if (filterValue === "comments-most") {
+    entries.sort((a, b) => (b[1].comments ? Object.keys(b[1].comments).length : 0) - (a[1].comments ? Object.keys(a[1].comments).length : 0))
+  }
+  
+  uploadsDiv.innerHTML = ""
+  entries.forEach(([key, entry]) => {
+    const div = document.createElement("div")
+    div.className = "upload-item"
+    
+    const userEl = document.createElement("p")
+    userEl.className = "by-text"
+    userEl.textContent = "By: " + entry.username
+    
+    const voteScore = getVoteScore(entry)
+    const voteEl = document.createElement("p")
+    voteEl.className = "upvote-display" + (voteScore < 0 ? " negative" : "")
+    voteEl.textContent = formatVoteDisplay(voteScore)
+    
+    const dateEl = document.createElement("p")
+    dateEl.className = "upload-date"
+    dateEl.textContent = formatUploadDate(entry.timestamp)
+    
+    const shortEl = document.createElement("p")
+    shortEl.className = "short-desc"
+    shortEl.textContent = entry.name
+    
+    const btn = document.createElement("button")
+    btn.className = "open-btn"
+    btn.textContent = "Open"
+    btn.onclick = () => openModal(entry, key)
+    
+    div.appendChild(userEl)
+    div.appendChild(voteEl)
+    div.appendChild(dateEl)
+    div.appendChild(shortEl)
+    div.appendChild(btn)
+    uploadsDiv.appendChild(div)
+  })
+}
+
+document.getElementById("filterSelect").onchange = applyFilter
+
+let currentModalUnsubscribe = null
+
+function openModal(entry, entryKey) {
+  let isEditing = false
+  const isOwner = entry.uuid === userUUID
+  
+  if (currentModalUnsubscribe) {
+    currentModalUnsubscribe()
+  }
+  
+  const uploadRef = ref(db, `uploads/${entryKey}`)
+  currentModalUnsubscribe = onValue(uploadRef, (snapshot) => {
+    const updatedEntry = snapshot.val()
+    if (updatedEntry) {
+      entry = updatedEntry
+      if (!isEditing && modalOverlay.classList.contains("active")) {
+        renderModal()
+      }
+    }
+  })
+  
+  function renderModal() {
+    if (!isEditing) {
+      const voteScore = getVoteScore(entry)
+      const userUpvoted = entry.upvotes && entry.upvotes[userUUID]
+      const userDownvoted = entry.downvotes && entry.downvotes[userUUID]
+      const comments = entry.comments || {}
+      const commentList = Object.entries(comments).map(([id, comment]) => ({
+        id,
+        ...comment
+      }))
+      
+      const commentsHTML = commentList.map(comment => {
+        const isCommentOwner = comment.username === username
+        const commentLikes = Object.keys(comment.likes || {}).length
+        const commentDislikes = Object.keys(comment.dislikes || {}).length
+        const userLiked = comment.likes && comment.likes[userUUID]
+        const userDisliked = comment.dislikes && comment.dislikes[userUUID]
+        return `
+        <div class="comment">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span class="comment-username">${comment.username}</span>
+              <span class="comment-time">${new Date(comment.timestamp).toLocaleString()}</span>
+            </div>
+            ${isCommentOwner ? `<button class="comment-delete-btn" data-comment-id="${comment.id}" style="background: #f44336; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">Delete</button>` : ''}
+          </div>
+          <div class="comment-text">${comment.text}</div>
+          <div style="margin-top: 8px; display: flex; gap: 10px; align-items: center;">
+            <button class="comment-like-btn" data-comment-id="${comment.id}" style="background: ${userLiked ? '#4caf50' : '#f0f0f0'}; color: ${userLiked ? 'white' : '#333'}; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">👍 ${commentLikes}</button>
+            <button class="comment-dislike-btn" data-comment-id="${comment.id}" style="background: ${userDisliked ? '#f44336' : '#f0f0f0'}; color: ${userDisliked ? 'white' : '#333'}; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">👎 ${commentDislikes}</button>
+          </div>
+        </div>
+      `
+      }).join('')
+      
+      modalBox.innerHTML = `
+        <h2>${entry.name}</h2>
+        <p class="by-text">By: ${entry.username}</p>
+        <p class="upload-date">${formatUploadDate(entry.timestamp)}</p>
+        <p class="upvote-display ${voteScore < 0 ? 'negative' : ''}">${formatVoteDisplay(voteScore)}</p>
+        <p class="short-desc">${entry.shortDesc || ''}</p>
+        <div class="tags">
+          ${(entry.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
+        </div>
+        <p class="full-desc">${entry.fullDesc || 'No additional description provided.'}</p>
+        
+        <div class="upvote-buttons">
+          <button class="vote-btn ${userUpvoted ? 'voted' : ''}" id="upvoteBtn">👍 Upvote</button>
+          <button class="vote-btn downvote-btn ${userDownvoted ? 'voted' : ''}" id="downvoteBtn">👎 Downvote</button>
+        </div>
+        
+        <button class="copy-btn" id="modalCopyBtn">Copy Link</button>
+        <button class="preview-btn" id="previewBtn">Preview Audio</button>
+        ${isOwner ? '<button class="edit-btn" id="modalEditBtn">Edit</button>' : ''}
+        ${isOwner ? '<button class="delete-btn" id="modalDeleteBtn">Delete</button>' : ''}
+        ${isAdmin && !isOwner ? '<button class="edit-btn" id="modalAdminEditBtn">Admin Edit</button>' : ''}
+        ${isAdmin && !isOwner ? '<button class="delete-btn" id="modalAdminDeleteBtn">Admin Delete</button>' : ''}
+        
+        <div class="preview-controls" id="previewControls">
+          <button class="vote-btn downvote-btn" id="stopPreviewBtn" style="padding: 8px 16px;">Stop</button>
+          <div class="preview-time"><span id="previewTime">0:00</span> / <span id="previewDuration">0:00</span></div>
+          <div class="preview-progress" id="previewProgress">
+            <div class="preview-progress-fill" id="previewProgressFill"></div>
+          </div>
+        </div>
+        
+        <div class="comments-section">
+          <h3 style="margin-top: 0;">Comments (${commentList.length})</h3>
+          <div class="comment-input-group">
+            <textarea id="commentInput" placeholder="Write a comment..."></textarea>
+            <button class="copy-btn" id="submitCommentBtn" style="width: 100%; margin-top: 5px;">Post Comment</button>
+          </div>
+          <div id="commentsList">
+            ${commentsHTML || '<p style="color: #999; font-size: 14px;">No comments yet. Be the first!</p>'}
+          </div>
+        </div>
+        
+        <button class="close-btn" id="modalCloseBtn" style="margin-top: 20px;">Close</button>
+      `
+      
+      document.getElementById("modalCopyBtn").onclick = function() {
+        navigator.clipboard.writeText(entry.link)
+        this.classList.add("copied")
+        this.textContent = "Copied!"
+        setTimeout(() => {
+          this.classList.remove("copied")
+          this.textContent = "Copy Link"
+        }, 1000)
+      }
+      
+      const previewAudio = document.getElementById("previewAudio")
+      const previewBtn = document.getElementById("previewBtn")
+      const stopPreviewBtn = document.getElementById("stopPreviewBtn")
+      const previewControls = document.getElementById("previewControls")
+      const previewProgressBar = document.getElementById("previewProgress")
+      const previewProgressFill = document.getElementById("previewProgressFill")
+      const previewTimeSpan = document.getElementById("previewTime")
+      const previewDurationSpan = document.getElementById("previewDuration")
+      
+      function formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return "0:00"
+        const mins = Math.floor(seconds / 60)
+        const secs = Math.floor(seconds % 60)
+        return `${mins}:${secs.toString().padStart(2, '0')}`
+      }
+      
+      previewBtn.onclick = () => {
+        if (previewAudio.src === entry.link && !previewAudio.paused) {
+          previewAudio.pause()
+          previewBtn.classList.remove("playing")
+          previewBtn.textContent = "Preview Audio"
+          music.play()
+        } else {
+          previewAudio.src = entry.link
+          previewAudio.play()
+          previewBtn.classList.add("playing")
+          previewBtn.textContent = "Pause Preview"
+          previewControls.classList.add("active")
+          music.pause()
+        }
+      }
+      
+      stopPreviewBtn.onclick = () => {
+        previewAudio.pause()
+        previewAudio.currentTime = 0
+        previewControls.classList.remove("active")
+        previewBtn.classList.remove("playing")
+        previewBtn.textContent = "🎵 Preview Audio"
+        music.play()
+      }
+      
+      previewAudio.ontimeupdate = () => {
+        const percent = (previewAudio.currentTime / previewAudio.duration) * 100
+        previewProgressFill.style.width = percent + "%"
+        previewTimeSpan.textContent = formatTime(previewAudio.currentTime)
+      }
+      
+      previewAudio.onloadedmetadata = () => {
+        previewDurationSpan.textContent = formatTime(previewAudio.duration)
+      }
+      
+      previewAudio.onended = () => {
+        previewControls.classList.remove("active")
+        previewBtn.classList.remove("playing")
+        previewBtn.textContent = "🎵 Preview Audio"
+        previewAudio.currentTime = 0
+        previewProgressFill.style.width = "0%"
+        music.play()
+      }
+      
+      previewProgressBar.onclick = (e) => {
+        if (previewAudio.duration) {
+          const rect = previewProgressBar.getBoundingClientRect()
+          const percent = (e.clientX - rect.left) / rect.width
+          previewAudio.currentTime = percent * previewAudio.duration
+        }
+      }
+      
+      document.getElementById("upvoteBtn").onclick = () => {
+        if (userUpvoted) {
+          remove(ref(db, `uploads/${entryKey}/upvotes/${userUUID}`))
+        } else {
+          set(ref(db, `uploads/${entryKey}/upvotes/${userUUID}`), true)
+          if (userDownvoted) {
+            remove(ref(db, `uploads/${entryKey}/downvotes/${userUUID}`))
+          }
+        }
+      }
+      
+      document.getElementById("downvoteBtn").onclick = () => {
+        if (userDownvoted) {
+          remove(ref(db, `uploads/${entryKey}/downvotes/${userUUID}`))
+        } else {
+          set(ref(db, `uploads/${entryKey}/downvotes/${userUUID}`), true)
+          if (userUpvoted) {
+            remove(ref(db, `uploads/${entryKey}/upvotes/${userUUID}`))
+          }
+        }
+      }
+      
+      document.getElementById("submitCommentBtn").onclick = () => {
+        const commentText = document.getElementById("commentInput").value.trim()
+        if (!commentText) {
+          alert("Please write a comment!")
+          return
+        }
+        
+        const commentId = Date.now().toString()
+        update(ref(db, `uploads/${entryKey}/comments/${commentId}`), {
+          username: username,
+          text: commentText,
+          timestamp: Date.now(),
+          likes: {},
+          dislikes: {}
+        })
+        
+        document.getElementById("commentInput").value = ""
+      }
+      
+      document.querySelectorAll(".comment-delete-btn").forEach(btn => {
+        btn.onclick = () => {
+          const commentId = btn.getAttribute("data-comment-id")
+          if (confirm("Delete this comment?")) {
+            remove(ref(db, `uploads/${entryKey}/comments/${commentId}`))
+          }
+        }
+      })
+      
+      document.querySelectorAll(".comment-like-btn").forEach(btn => {
+        btn.onclick = () => {
+          const commentId = btn.getAttribute("data-comment-id")
+          const comment = comments[commentId]
+          const userLiked = comment.likes && comment.likes[userUUID]
+          if (userLiked) {
+            remove(ref(db, `uploads/${entryKey}/comments/${commentId}/likes/${userUUID}`))
+          } else {
+            set(ref(db, `uploads/${entryKey}/comments/${commentId}/likes/${userUUID}`), true)
+            if (comment.dislikes && comment.dislikes[userUUID]) {
+              remove(ref(db, `uploads/${entryKey}/comments/${commentId}/dislikes/${userUUID}`))
+            }
+          }
+        }
+      })
+      
+      document.querySelectorAll(".comment-dislike-btn").forEach(btn => {
+        btn.onclick = () => {
+          const commentId = btn.getAttribute("data-comment-id")
+          const comment = comments[commentId]
+          const userDisliked = comment.dislikes && comment.dislikes[userUUID]
+          if (userDisliked) {
+            remove(ref(db, `uploads/${entryKey}/comments/${commentId}/dislikes/${userUUID}`))
+          } else {
+            set(ref(db, `uploads/${entryKey}/comments/${commentId}/dislikes/${userUUID}`), true)
+            if (comment.likes && comment.likes[userUUID]) {
+              remove(ref(db, `uploads/${entryKey}/comments/${commentId}/likes/${userUUID}`))
+            }
+          }
+        }
+      })
+      
+      if (isOwner) {
+        document.getElementById("modalEditBtn").onclick = () => {
+          isEditing = true
+          renderModal()
+        }
+        
+        document.getElementById("modalDeleteBtn").onclick = () => {
+          if (confirm("Are you sure you want to delete this upload?")) {
+            remove(ref(db, `uploads/${entryKey}`))
+            closeModal()
+          }
+        }
+      }
+      
+      if (isAdmin && !isOwner) {
+        document.getElementById("modalAdminEditBtn").onclick = () => {
+          isEditing = true
+          renderModal()
+        }
+        
+        document.getElementById("modalAdminDeleteBtn").onclick = () => {
+          if (confirm("Are you sure you want to delete this upload?")) {
+            remove(ref(db, `uploads/${entryKey}`))
+            closeModal()
+          }
+        }
+      }
+      
+      document.getElementById("modalCloseBtn").onclick = closeModal
+    } else {
+      const tagOptions = ['Lobby Music', 'LMS Music', 'Chase Music', 'Ambience Music', 'Shop Music']
+      const currentTags = entry.tags || []
+      const isOwner = entry.uuid === userUUID
+      
+      let tagsHTML = ''
+      tagOptions.forEach(tag => {
+        const isSelected = currentTags.includes(tag)
+        tagsHTML += `<label style="display: inline-block; margin-right: 15px;">
+          <input type="checkbox" value="${tag}" ${isSelected ? 'checked' : ''} class="tag-checkbox">
+          ${tag}
+        </label>`
+      })
+      
+      modalBox.innerHTML = `
+        <h2>${isOwner ? 'Edit Upload' : 'Admin Edit Upload'}</h2>
+        <label>Name:</label>
+        <input type="text" id="editName" value="${entry.name}">
+        <label>Short Description:</label>
+        <input type="text" id="editShortDesc" value="${entry.shortDesc || ''}">
+        <label>Full Description:</label>
+        <textarea id="editFullDesc" rows="6">${entry.fullDesc || ''}</textarea>
+        <label>Link:</label>
+        <input type="text" id="editLink" value="${entry.link}">
+        <label>Tags:</label>
+        <div>${tagsHTML}</div>
+        <br><br>
+        <button class="copy-btn" id="modalConfirmBtn">Confirm</button>
+        <button class="close-btn" id="modalCancelBtn">Cancel</button>
+      `
+      
+      document.getElementById("modalConfirmBtn").onclick = () => {
+        const newName = document.getElementById("editName").value.trim()
+        const newShortDesc = document.getElementById("editShortDesc").value.trim()
+        const newFullDesc = document.getElementById("editFullDesc").value.trim()
+        const newLink = document.getElementById("editLink").value.trim()
+        
+        const selectedTags = Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.value)
+        
+        if (!newName || !newShortDesc) {
+          alert("Name and short description are required!")
+          return
+        }
+        
+        update(ref(db, `uploads/${entryKey}`), {
+          name: newName,
+          shortDesc: newShortDesc,
+          fullDesc: newFullDesc,
+          link: formatCatboxLink(newLink),
+          tags: selectedTags
+        })
+        
+        entry.name = newName
+        entry.shortDesc = newShortDesc
+        entry.fullDesc = newFullDesc
+        entry.link = formatCatboxLink(newLink)
+        entry.tags = selectedTags
+        
+        isEditing = false
+        renderModal()
+      }
+      
+      document.getElementById("modalCancelBtn").onclick = () => {
+        isEditing = false
+        renderModal()
+      }
+    }
+  }
+  
+  renderModal()
+  modalOverlay.classList.add("active")
+  
+  modalOverlay.onclick = (e) => {
+    if (e.target === modalOverlay) closeModal()
+  }
+}
+
+function closeModal() {
+  if (currentModalUnsubscribe) {
+    currentModalUnsubscribe()
+    currentModalUnsubscribe = null
+  }
+  
+  const previewAudio = document.getElementById("previewAudio")
+  if (previewAudio && !previewAudio.paused) {
+    previewAudio.pause()
+    previewAudio.currentTime = 0
+    music.play()
+  }
+  
+  modalOverlay.classList.remove("active")
+}
+
+const announcerBtn = document.getElementById("announcerBtn")
+const announcerPanel = document.getElementById("announcerPanel")
+const announcementText = document.getElementById("announcementText")
+const announcementDuration = document.getElementById("announcementDuration")
+const announceSubmitBtn = document.getElementById("announceSubmitBtn")
+const stopAnnounceBtn = document.getElementById("stopAnnounceBtn")
+const closePanelBtn = document.getElementById("closePanelBtn")
+const announceDisplay = document.getElementById("announceDisplay")
+
+let announcementTimeout = null
+
+if (!isAdmin) {
+  announcerBtn.style.display = "none"
+}
+
+announcerBtn.onclick = () => {
+  announcerPanel.classList.toggle("active")
+}
+
+closePanelBtn.onclick = () => {
+  announcerPanel.classList.remove("active")
+}
+
+onValue(announcementRef, (snapshot) => {
+  const data = snapshot.val()
+  if (data && data.text && data.endTime && data.endTime > Date.now()) {
+    announceDisplay.textContent = data.text
+    announceDisplay.classList.add("active")
+    if (isAdmin) {
+      announceSubmitBtn.style.display = "none"
+      stopAnnounceBtn.style.display = "block"
+    }
+    
+    if (announcementTimeout) clearTimeout(announcementTimeout)
+    
+    const timeUntilEnd = data.endTime - Date.now()
+    announcementTimeout = setTimeout(() => {
+      announceDisplay.classList.remove("active")
+      if (isAdmin) {
+        announceSubmitBtn.style.display = "block"
+        stopAnnounceBtn.style.display = "none"
+      }
+    }, timeUntilEnd)
+  } else {
+    announceDisplay.classList.remove("active")
+    if (isAdmin) {
+      announceSubmitBtn.style.display = "block"
+      stopAnnounceBtn.style.display = "none"
+    }
+  }
+})
+
+announceSubmitBtn.onclick = () => {
+  const text = announcementText.value.trim()
+  const duration = parseInt(announcementDuration.value) || 5
+  
+  if (!text) {
+    alert("Please enter an announcement!")
+    return
+  }
+  
+  if (!isAdmin) {
+    alert("Only admins can make announcements!")
+    return
+  }
+  
+  const endTime = Date.now() + (duration * 60 * 1000)
+  update(announcementRef, {
+    text: text,
+    endTime: endTime,
+    createdBy: username,
+    createdAt: Date.now()
+  })
+  
+  announcementText.value = ""
+  announcementDuration.value = "5"
+}
+
+stopAnnounceBtn.onclick = () => {
+  if (!isAdmin) return
+  
+  update(announcementRef, {
+    text: null,
+    endTime: null
+  })
+  
+  if (announcementTimeout) clearTimeout(announcementTimeout)
+  announceDisplay.classList.remove("active")
+  announceSubmitBtn.style.display = "block"
+  stopAnnounceBtn.style.display = "none"
+}
+</script>
+</body>
+</html>
